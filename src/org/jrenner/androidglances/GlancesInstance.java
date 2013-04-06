@@ -1,6 +1,5 @@
 package org.jrenner.androidglances;
 
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 import org.jrenner.glances.*;
@@ -15,6 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
+    private static final int TIMEOUT = 10000; // milliseconds
     public URL url;
     public String name;
     private Glances glances;
@@ -24,6 +24,7 @@ public class GlancesInstance {
     SystemInfo systemInfo;
     List<NetworkInterface> netInterfaces;
     List<FileSystem> fileSystems;
+    Load load;
 
 
     public GlancesInstance(URL url, String name) {
@@ -32,16 +33,16 @@ public class GlancesInstance {
         try {
             this.glances = new Glances(url);
         } catch (MalformedURLException e) {
-            Log.e(TAG, e.getMessage());
+            Log.e(TAG, e.toString());
         }
     }
 
     public boolean update() {
-        updateInstance updater = new updateInstance();
+        instanceUpdater updater = new instanceUpdater();
         updater.execute(glances);
         Boolean updateOK = false;
         try {
-            updateOK = updater.get(5000, TimeUnit.MILLISECONDS);
+            updateOK = updater.get(TIMEOUT, TimeUnit.MILLISECONDS);
         } catch (InterruptedException interrupt) {
             Log.e(TAG, interrupt.toString());
         } catch (TimeoutException timeout) {
@@ -52,7 +53,7 @@ public class GlancesInstance {
         return updateOK;
     }
 
-    private class updateInstance extends AsyncTask<Glances, Void, Boolean> {
+    private class instanceUpdater extends AsyncTask<Glances, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Glances... glancesList) {
             Boolean updateOK = true;
@@ -66,8 +67,9 @@ public class GlancesInstance {
                     systemInfo = current.getSystem();
                     netInterfaces = current.getNetwork();
                     fileSystems = current.getFs();
+                    load = current.getLoad();
                 } catch (Exception e) {
-                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, e.toString());
                     updateOK = false;
                 }
             }

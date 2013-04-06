@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent" android:id="@+id/monitorTable">
+
+    <TextView
+        style="@style/MonitorTableHeader"
+        android:text="Name goes here"
+        android:id="@+id/nameText"
+    />
+    <TextView
+        style="@style/MonitorTableTextView"
+        android:text="System goes here"
+        android:id="@+id/systemText"/>
+    <TextView
+        style="@style/MonitorTableHeader"
+        android:text="CPU" />
+    <TableRow>
+        <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/cpuIdle"
+            android:text="CPUidle" />
+    </TableRow>
+    <TextView
+        style="@style/MonitorTableHeader"
+        android:text="Memory" />
+    <TableRow>
+        <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/totalMem"
+            android:text="totalMem" />
+    </TableRow>
+
+</TableLayout>

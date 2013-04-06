@@ -3,11 +3,28 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-        >
+              android:id="@+id/mainLayout">
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Hello World, Main"
-            android:id="@+id/mainText" android:textSize="18sp" android:padding="6dp"/>
+            android:text="Main"
+            android:id="@+id/mainText" android:textSize="18sp" android:padding="6dp" android:background="#1a0519"/>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start Updates"
+            android:id="@+id/startButton"/>
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Shutdown"
+            android:id="@+id/quitButton"/>
+
+    <FrameLayout
+    android:id="@+id/fragment_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" >
+    </FrameLayout>
 </LinearLayout>
 
