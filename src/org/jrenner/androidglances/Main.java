@@ -3,22 +3,11 @@ package org.jrenner.androidglances;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import org.jrenner.glances.*;
-
-import java.net.MalformedURLException;
-
-import java.net.URL;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
 
 public class Main extends Activity {
     private static final String TAG = "Glances-Main";
@@ -29,28 +18,42 @@ public class Main extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        mainText = (TextView) findViewById(R.id.mainText);
-        Button startButton = (Button) findViewById(R.id.startButton);
         Button quitButton = (Button) findViewById(R.id.quitButton);
-        startButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                monitorFrag.startUpdates();
-            }
-        });
         quitButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                Log.w(TAG, "Trying to shutdown...");
-                finish();
+                ShutdownApp();
             }
         });
-        initializeFragments();
-        monitorFrag.startUpdates();
+        Button raspberryButton = (Button) findViewById(R.id.raspberryButton);
+        raspberryButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                monitorFrag.setServer("http://home.jrenner.org:7113", "Raspberry Pi");
+            }
+        });
+        Button pcButton = (Button) findViewById(R.id.pcButton);
+        pcButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                monitorFrag.setServer("http://192.168.173.103:61209", "Ubuntu PC");
+            }
+        });
+        Button stopButton = (Button) findViewById(R.id.stopButton);
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                monitorFrag.stopUpdates();
+            }
+        });
+        if (monitorFrag == null) {
+            initializeFragments();
+        } else {
+            Log.d(TAG, "monitorFrag already exists, not initializing");
+        }
     }
 
     void initializeFragments() {
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        monitorFrag = new MonitorFragment();
+        monitorFrag = MonitorFragment.getInstance();
         fragmentTransaction.add(R.id.fragment_container, monitorFrag);
         fragmentTransaction.commit();
         fragmentManager.executePendingTransactions();
@@ -59,4 +62,9 @@ public class Main extends Activity {
         Log.d(TAG, "Finished init of fragment");
     }
 
+    void ShutdownApp() {
+        monitorFrag.stopUpdates();
+        Log.w(TAG, "Trying to shutdown");
+        finish();
+    }
 }

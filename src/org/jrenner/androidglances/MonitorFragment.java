@@ -20,22 +20,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MonitorFragment extends Fragment {
+    private static MonitorFragment instance;
     private static final String TAG = "Glances-MonitorFrag";
     private GlancesInstance server;
     private Handler updateHandler;
-    private int updateInterval = 3000;
+    private int updateInterval = 1000;
 
     private TextView nameText;
+    private TextView serverAddress;
+    private TextView updateTimeText;
+    private TextView updateAgeText;
     private TextView systemText;
-    private TextView cpuIdle;
+    private TextView cpuHeader;
+    private TextView cpuCores;
+    private TextView cpuUsage;
+    private TextView cpuLoad;
     private TextView totalMem;
+    private Toast startUpdatesToast;
+    private Toast stopUpdatesToast;
+    private long lastUpdateTime;
+
+    private MonitorFragment() {
+
+    }
+
+    public static MonitorFragment getInstance() {
+        if (instance == null) {
+            instance = new MonitorFragment();
+        }
+        return instance;
+    }
 
     @Override
     public void onCreate(Bundle onSavedInstance) {
         super.onCreate(onSavedInstance);
         updateHandler = new Handler();
         Log.d(TAG, "monitor fragment created");
-        initializeServer();
+        startUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Started updates", Toast.LENGTH_SHORT);
+        stopUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Stopped updates", Toast.LENGTH_SHORT);
     }
 
     @Override
@@ -44,39 +66,76 @@ public class MonitorFragment extends Fragment {
 
         // assign views
         nameText = (TextView) view.findViewById(R.id.nameText);
+        serverAddress = (TextView) view.findViewById(R.id.serverAddress);
+        updateTimeText = (TextView) view.findViewById(R.id.updateTimeText);
+        updateAgeText = (TextView) view.findViewById(R.id.updateAgeText);
         systemText = (TextView) view.findViewById(R.id.systemText);
-        cpuIdle = (TextView) view.findViewById(R.id.cpuIdle);
+        cpuHeader = (TextView) view.findViewById(R.id.CPUHeader);
+        cpuUsage = (TextView) view.findViewById(R.id.cpuUsage);
+        cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
         totalMem = (TextView) view.findViewById(R.id.totalMem);
         return view;
     }
 
-    public void initializeServer() {
+    public void setServer(String urltext, String serverNickName) {
         URL url = null;
         try {
-            url = new URL("http://home.jrenner.org:7113");
+            url = new URL(urltext);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
         }
-        server = new GlancesInstance(url, "Raspberry Pi");
+        if (server == null) {
+            server = new GlancesInstance(url, serverNickName);
+        } else {
+            server.setNewServer(url, serverNickName);
+        }
+        startUpdates();
+        serverAddress.setText("Waiting for update from server");
+        nameText.setText("...");
     }
 
     private void update() {
-        Boolean updateOK = server.update();
-        if (!updateOK) {
-            Log.e(TAG, "ERROR: Couldn't update Glances instance");
-            Toast.makeText(getActivity().getApplicationContext(), "Problem getting update", Toast.LENGTH_SHORT).show();
-            stopUpdates();
+        if (server == null) {
+            Log.d(TAG, "No update, server was null");
+            return;
+        }
+        if (!server.isUpdateExecuting()) {
+            server.update();
+        }
+        if (!server.isUpdateWaiting()) {
+            Log.v(TAG, "No update waiting for server: " + server.nickName);
+            if (lastUpdateTime != 0) {
+                String age;
+                long monitorTime = System.currentTimeMillis() - server.monitorStartTime;
+                long updateAge = (System.currentTimeMillis() - lastUpdateTime) / 1000;
+                if (updateAge >= 3600) {
+                    age = updateAge / 3600 + "h old";
+                } else if (updateAge >= 60) {
+                    age = updateAge / 60 + "m old";
+                } else {
+                    age = updateAge + "s old";
+                }
+                updateAgeText.setText(age + " monitored for " + Tools.convertToHumanTime(monitorTime));
+            }
         } else {
             try {
-                nameText.setText(String.format("%s", server.name, server.url.toString()));
+                nameText.setText(server.nickName);
+                serverAddress.setText(server.url.toString());
+                updateTimeText.setText(server.now.toString());
                 systemText.setText(server.systemInfo.toString());
-                cpuIdle.setText(String.format("USAGE: %3.0f%%\nLOAD (1/5/15): %3.0f%%, %3.0f%%, %3.0f%%",
-                        100 - server.cpu.getIdle(),
-                        server.load.getMin1() * 100, server.load.getMin5() * 100, server.load.getMin15() * 100));
+                cpuHeader.setText(String.format("CPU (%d cores)", server.cores));
+                Log.i("TAG", "I see " + server.cores + " cores on " + server.nickName);
+                cpuUsage.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", 100 - server.cpu.getIdle(),
+                        server.cpu.getUser(), server.cpu.getSystem()));
+                cpuLoad.setText(String.format("Load (1/5/15min): %3.2f, %3.2f, %3.2f",
+                        server.load.getMin1(), server.load.getMin5(), server.load.getMin15()));
                 totalMem.setText("Total: " + Glances.autoUnit(server.memory.getTotal()));
             } catch (NullPointerException e) {
                 Log.e(TAG, "null pointer when getting glances data: " + e.toString());
             }
+            Log.v(TAG, "Got update from " + server.nickName + " at " + server.now.toString());
+            lastUpdateTime = System.currentTimeMillis();
+            server.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
         }
     }
 
@@ -90,11 +149,14 @@ public class MonitorFragment extends Fragment {
 
     public void startUpdates() {
         Log.d(TAG, "Started update timer");
+        startUpdatesToast.show();
+        updateHandler.removeCallbacks(updateTimer);
         updateTimer.run();
     }
 
     public void stopUpdates() {
         Log.d(TAG, "Stopped update timer");
         updateHandler.removeCallbacks(updateTimer);
+        stopUpdatesToast.show();
     }
 }

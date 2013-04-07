@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent" android:id="@+id/monitorTable">
-
-    <TextView
-        style="@style/MonitorTableHeader"
-        android:text="Name goes here"
-        android:id="@+id/nameText"
-    />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/monitorTable">
+    <TableRow android:layout_gravity="center">
+        <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/nameText"
+            android:layout_gravity="center"/>
+        <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/updateAgeText" />
+    </TableRow>
     <TextView
         style="@style/MonitorTableTextView"
-        android:text="System goes here"
+        android:id="@+id/serverAddress" />
+    <TextView
+        style="@style/MonitorTableTextView"
+        android:id="@+id/updateTimeText" />
+    <TextView
+        style="@style/MonitorTableTextView"
         android:id="@+id/systemText"/>
     <TextView
         style="@style/MonitorTableHeader"
-        android:text="CPU" />
-    <TableRow>
-        <TextView
-            style="@style/MonitorTableTextView"
-            android:id="@+id/cpuIdle"
-            android:text="CPUidle" />
-    </TableRow>
+        android:text="CPU"
+        android:id="@+id/CPUHeader"/>
+    <TextView
+        style="@style/MonitorTableTextView"
+        android:id="@+id/cpuUsage" />
+    <TextView
+        style="@style/MonitorTableTextView"
+        android:id="@+id/cpuLoad" />
     <TextView
         style="@style/MonitorTableHeader"
         android:text="Memory" />
     <TableRow>
         <TextView
             style="@style/MonitorTableTextView"
-            android:id="@+id/totalMem"
-            android:text="totalMem" />
+            android:id="@+id/totalMem" />
     </TableRow>
 
 </TableLayout>
