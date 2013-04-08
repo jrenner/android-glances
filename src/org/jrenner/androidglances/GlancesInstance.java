@@ -34,7 +34,7 @@ public class GlancesInstance {
     List<Process> processes;
     ProcessCount procCount;
     List<Sensor> sensors;
-    int cores;
+    Integer cores;
     public boolean updateWaiting; // if true, there is new updated data for the app to process
     public boolean updateExecuting; // used to run only one update task at a time
     long monitorStartTime;
@@ -79,10 +79,9 @@ public class GlancesInstance {
         //Log.v(TAG, "updateWaiting set to: " + status);
     }
 
-    private class InstanceUpdater extends AsyncTask<Glances, Void, Boolean> {
+    private class InstanceUpdater extends AsyncTask<Glances, Void, Void> {
         @Override
-        protected Boolean doInBackground(Glances... glancesList) {
-            Boolean updateOK = true;
+        protected Void doInBackground(Glances... glancesList) {
             int length = glancesList.length;
             for (int i = 0; i < length; i++) {
                 Glances current = glancesList[i];
@@ -92,7 +91,6 @@ public class GlancesInstance {
                 } catch (ParseException e) {
                     Log.w(TAG, "GetNow() - " + e.toString());
                 }
-                HANDLE ALL EXCEPTIONS NICELY PLEASE
                     cpu = current.getCpu();
                     memory = current.getMem();
                     memorySwap = current.getMemSwap();
@@ -108,22 +106,19 @@ public class GlancesInstance {
                     sensors = current.getSensors();
                     cores = current.getCore();
                     float timeTaken = (float) (System.currentTimeMillis() - updateStartTime) / 1000;
-                    Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
+                    if (now != null) {
+                        Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
+                        setUpdateWaiting(true);
+                    } else {
+                        Log.e(TAG, String.format("Failed to get update for %s after %.1fs", nickName, timeTaken));
+                    }
             }
-            if (updateOK) {
-                setUpdateWaiting(true);
-                //Log.v(TAG, "Update OK for: " + nickName + " - " + url.toString());
-            } else {
-                Log.w(TAG, "update failed for " + url.toString());
-            }
-
-
             try {
                 Thread.sleep(updateInterval);
             } catch (InterruptedException e) {
                 Log.e(TAG, "updateInterval sleep interrupted: " + e.toString());
             }
-            return updateOK;
+            return null;  // there has to be a better way to do this...
         }
 
         protected void onPostExecute(Boolean updateOK) {
