@@ -7,6 +7,7 @@ import org.jrenner.glances.Process;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -37,6 +38,7 @@ public class GlancesInstance {
     public boolean updateWaiting; // if true, there is new updated data for the app to process
     public boolean updateExecuting; // used to run only one update task at a time
     long monitorStartTime;
+    InstanceUpdater instanceUpdater;
 
 
 
@@ -57,8 +59,11 @@ public class GlancesInstance {
     }
 
     public void update() {
-        InstanceUpdater instanceUpdater = new InstanceUpdater();
-        instanceUpdater.execute(glances);
+        if (instanceUpdater != null && instanceUpdater.getStatus() != AsyncTask.Status.FINISHED) {
+            return;
+        }
+        instanceUpdater = new InstanceUpdater();
+        instanceUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, glances);
     }
 
     public boolean isUpdateWaiting() {
@@ -71,23 +76,23 @@ public class GlancesInstance {
 
     public void setUpdateWaiting(boolean status) {
         updateWaiting = status;
-        Log.v(TAG, "updateWaiting set to: " + status);
+        //Log.v(TAG, "updateWaiting set to: " + status);
     }
 
     private class InstanceUpdater extends AsyncTask<Glances, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Glances... glancesList) {
-            try {
-                Thread.sleep(updateInterval);
-            } catch (InterruptedException e) {
-                Log.e(TAG, "updateInterval sleep interrupted: " + e.toString());
-            }
             Boolean updateOK = true;
             int length = glancesList.length;
             for (int i = 0; i < length; i++) {
                 Glances current = glancesList[i];
+                long updateStartTime = System.currentTimeMillis();
                 try {
                     now = current.getNow();
+                } catch (ParseException e) {
+                    Log.w(TAG, "GetNow() - " + e.toString());
+                }
+                HANDLE ALL EXCEPTIONS NICELY PLEASE
                     cpu = current.getCpu();
                     memory = current.getMem();
                     memorySwap = current.getMemSwap();
@@ -102,20 +107,26 @@ public class GlancesInstance {
                     procCount = current.getProcessCount();
                     sensors = current.getSensors();
                     cores = current.getCore();
-                } catch (Exception e) {
-                    Log.e(TAG, "GlancesInstance update error: " + e.toString());
-                    updateOK = false;
-                }
+                    float timeTaken = (float) (System.currentTimeMillis() - updateStartTime) / 1000;
+                    Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
+            }
+            if (updateOK) {
+                setUpdateWaiting(true);
+                //Log.v(TAG, "Update OK for: " + nickName + " - " + url.toString());
+            } else {
+                Log.w(TAG, "update failed for " + url.toString());
+            }
+
+
+            try {
+                Thread.sleep(updateInterval);
+            } catch (InterruptedException e) {
+                Log.e(TAG, "updateInterval sleep interrupted: " + e.toString());
             }
             return updateOK;
         }
 
         protected void onPostExecute(Boolean updateOK) {
-            if (updateOK) {
-                setUpdateWaiting(true);
-            } else {
-                Log.w(TAG, "update failed for " + url.toString());
-            }
         }
     }
 }

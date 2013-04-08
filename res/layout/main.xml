@@ -35,10 +35,10 @@
                 android:id="@+id/stopButton"/>
     </LinearLayout>
 
-    <FrameLayout
+    <ScrollView
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content" >
-    </FrameLayout>
+    </ScrollView>
 </LinearLayout>
 

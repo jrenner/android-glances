@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.jrenner.glances.FileSystem;
@@ -16,13 +15,15 @@ import org.jrenner.glances.NetworkInterface;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class MonitorFragment extends Fragment {
     private static MonitorFragment instance;
     private static final String TAG = "Glances-MonitorFrag";
-    private GlancesInstance server;
+    private GlancesInstance monitored;
+    private List<GlancesInstance> allGlances;
     private Handler updateHandler;
     private int updateInterval = 1000;
 
@@ -32,10 +33,15 @@ public class MonitorFragment extends Fragment {
     private TextView updateAgeText;
     private TextView systemText;
     private TextView cpuHeader;
-    private TextView cpuCores;
     private TextView cpuUsage;
     private TextView cpuLoad;
-    private TextView totalMem;
+    private TextView memory;
+    private TextView swap;
+    private TextView nets;
+    private TextView diskIO;
+    private TextView fileSystems;
+    private TextView hddTemp;
+    private TextView sensors;
     private Toast startUpdatesToast;
     private Toast stopUpdatesToast;
     private long lastUpdateTime;
@@ -58,6 +64,18 @@ public class MonitorFragment extends Fragment {
         Log.d(TAG, "monitor fragment created");
         startUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Started updates", Toast.LENGTH_SHORT);
         stopUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Stopped updates", Toast.LENGTH_SHORT);
+        allGlances = new ArrayList<GlancesInstance>();
+        addServerToList("http://home.jrenner.org:7113", "Raspberry Pi");
+        addServerToList("http://192.168.173.103:61209", "Ubuntu PC");
+
+        addServerToList("http://192.168.173.103:28100", "Test 0");
+        addServerToList("http://192.168.173.103:28101", "Test 1");
+        addServerToList("http://192.168.173.103:28102", "Test 2");
+        addServerToList("http://192.168.173.103:28103", "Test 3");
+        addServerToList("http://192.168.173.103:28104", "Test 4");
+
+        startUpdates();
+
     }
 
     @Override
@@ -73,69 +91,106 @@ public class MonitorFragment extends Fragment {
         cpuHeader = (TextView) view.findViewById(R.id.CPUHeader);
         cpuUsage = (TextView) view.findViewById(R.id.cpuUsage);
         cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
-        totalMem = (TextView) view.findViewById(R.id.totalMem);
+        memory = (TextView) view.findViewById(R.id.memory);
+        nets = (TextView) view.findViewById(R.id.nets);
+        fileSystems = (TextView) view.findViewById(R.id.fileSystems);
         return view;
     }
 
-    public void setServer(String urltext, String serverNickName) {
+    public void addServerToList(String urltext, String nickName) {
         URL url = null;
         try {
             url = new URL(urltext);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
         }
-        if (server == null) {
-            server = new GlancesInstance(url, serverNickName);
-        } else {
-            server.setNewServer(url, serverNickName);
+        Log.v(TAG, "Adding Glances server to list: " + urltext + nickName);
+        allGlances.add(new GlancesInstance(url, nickName));
+    }
+
+    public void setServer(String urltext, String serverNickName) {
+        GlancesInstance selection = null;
+        for (GlancesInstance server : allGlances) {
+            if (server.nickName.equals(serverNickName)) {
+                selection = server;
+            }
         }
-        startUpdates();
-        serverAddress.setText("Waiting for update from server");
+        if (selection == null) {
+            Log.e(TAG, "Couldn't find server with name - " + serverNickName);
+            return;
+        }
+        monitored = selection;
+        updateAgeText.setText("Waiting for update from server");
         nameText.setText("...");
     }
 
+    void threadReport() {
+        int count = 0;
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        for (Thread thread : threadSet) {
+            String text = thread.toString();
+            if (text.contains("AsyncTask"))
+                count++;
+        }
+        Log.v(TAG, "AsyncTasks: " + count);
+    }
+
     private void update() {
-        if (server == null) {
-            Log.d(TAG, "No update, server was null");
+        threadReport();
+        for (GlancesInstance server : allGlances) {
+            if (!server.isUpdateExecuting()) {
+                server.update();
+            }
+        }
+        if (monitored == null) {
+            //Log.v(TAG, "No server being monitored, nothing to do.");
             return;
         }
-        if (!server.isUpdateExecuting()) {
-            server.update();
-        }
-        if (!server.isUpdateWaiting()) {
-            Log.v(TAG, "No update waiting for server: " + server.nickName);
+        if (!monitored.isUpdateWaiting()) {
+            //Log.v(TAG, "No update waiting for monitored server: " + monitored.nickName);
             if (lastUpdateTime != 0) {
-                String age;
-                long monitorTime = System.currentTimeMillis() - server.monitorStartTime;
-                long updateAge = (System.currentTimeMillis() - lastUpdateTime) / 1000;
-                if (updateAge >= 3600) {
-                    age = updateAge / 3600 + "h old";
-                } else if (updateAge >= 60) {
-                    age = updateAge / 60 + "m old";
-                } else {
-                    age = updateAge + "s old";
-                }
-                updateAgeText.setText(age + " monitored for " + Tools.convertToHumanTime(monitorTime));
+                long monitorTime = System.currentTimeMillis() - monitored.monitorStartTime;
+                long updateAge = System.currentTimeMillis() - lastUpdateTime;
+                updateAgeText.setText(Tools.convertToHumanTime(updateAge) + " old, monitored for " + Tools.convertToHumanTime(monitorTime));
             }
         } else {
             try {
-                nameText.setText(server.nickName);
-                serverAddress.setText(server.url.toString());
-                updateTimeText.setText(server.now.toString());
-                systemText.setText(server.systemInfo.toString());
-                cpuHeader.setText(String.format("CPU (%d cores)", server.cores));
-                Log.i("TAG", "I see " + server.cores + " cores on " + server.nickName);
-                cpuUsage.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", 100 - server.cpu.getIdle(),
-                        server.cpu.getUser(), server.cpu.getSystem()));
+                nameText.setText(monitored.nickName);
+                serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf.applyPattern("HH:mm:ss z");
+                String formattedNow = sdf.format(monitored.now);
+                updateTimeText.setText(formattedNow);
+                systemText.setText(monitored.systemInfo.toString());
+                cpuHeader.setText(String.format("CPU (%d cores)", monitored.cores));
+                Log.i("TAG", "I see " + monitored.cores + " cores on " + monitored.nickName);
+                cpuUsage.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", 100 - monitored.cpu.getIdle(),
+                        monitored.cpu.getUser(), monitored.cpu.getSystem()));
                 cpuLoad.setText(String.format("Load (1/5/15min): %3.2f, %3.2f, %3.2f",
-                        server.load.getMin1(), server.load.getMin5(), server.load.getMin15()));
-                totalMem.setText("Total: " + Glances.autoUnit(server.memory.getTotal()));
+                        monitored.load.getMin1(), monitored.load.getMin5(), monitored.load.getMin15()));
+                memory.setText(monitored.memory.toString());
+                String netData = "";
+                for (NetworkInterface net : monitored.netInterfaces) {
+                    if (!"".equals(netData)) {
+                        netData += "\n";
+                    }
+                    netData += net.toString();
+                }
+                nets.setText(netData);
+                String fsData = "";
+                for (FileSystem fs : monitored.fileSystems) {
+                    if (!"".equals(fsData)) {
+                        fsData += "\n";
+                    }
+                    fsData += fs.toString();
+                }
+                fileSystems.setText(fsData);
             } catch (NullPointerException e) {
                 Log.e(TAG, "null pointer when getting glances data: " + e.toString());
             }
-            Log.v(TAG, "Got update from " + server.nickName + " at " + server.now.toString());
+            Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
-            server.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
+            monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
         }
     }
 
@@ -159,4 +214,24 @@ public class MonitorFragment extends Fragment {
         updateHandler.removeCallbacks(updateTimer);
         stopUpdatesToast.show();
     }
+
+    public void shutdown() {
+        stopUpdates();
+        updateTimer = null;
+        updateHandler = null;
+    }
+
+/*    private boolean isNetSignificant(NetworkInterface net) {
+        long CUMUL_THRESHOLD = 1024 * 1000 * 10; // about 10 megabytes
+        long cumulativeTotal = net.getCumulativeRx() + net.getCumulativeTx();
+        if (cumulativeTotal > CUMUL_THRESHOLD) {
+            return true;
+        }
+        long SPEED_THRESHOLD = 1024 * 10; // about 5 kB/s
+        long currentTotal = net.getRxPerSecond() + net.getTxPerSecond();
+        if (currentTotal > SPEED_THRESHOLD) {
+            return true;
+        }
+        return false;
+    }*/
 }

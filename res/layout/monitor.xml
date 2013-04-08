@@ -1,27 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:id="@+id/monitorTable">
-    <TableRow android:layout_gravity="center">
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="#110017" >
         <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/nameText"
-            android:layout_gravity="center"/>
+            android:text="Name" />
         <TextView
             style="@style/MonitorTableTextView"
-            android:id="@+id/updateAgeText" />
-    </TableRow>
+            android:id="@+id/updateAgeText"
+            android:text="Age"
+            android:layout_width="wrap_content"
+            android:gravity="right"
+            android:layout_gravity="right"
+            android:layout_alignParentRight="true"/>
+    </RelativeLayout>Layout>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/systemText"/>
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/serverAddress" />
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/updateTimeText" />
-    <TextView
-        style="@style/MonitorTableTextView"
-        android:id="@+id/systemText"/>
     <TextView
         style="@style/MonitorTableHeader"
         android:text="CPU"
@@ -35,10 +43,20 @@
     <TextView
         style="@style/MonitorTableHeader"
         android:text="Memory" />
-    <TableRow>
-        <TextView
+    <TextView
+        style="@style/MonitorTableTextView"
+        android:id="@+id/memory" />
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:text="Network Interfaces" />
+    <TextView
             style="@style/MonitorTableTextView"
-            android:id="@+id/totalMem" />
-    </TableRow>
+            android:id="@+id/nets" />
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:text="File Systems" />
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/fileSystems" />
 
-</TableLayout>
+</LinearLayout>

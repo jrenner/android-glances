@@ -63,8 +63,8 @@ public class Main extends Activity {
     }
 
     void ShutdownApp() {
-        monitorFrag.stopUpdates();
         Log.w(TAG, "Trying to shutdown");
+        monitorFrag.shutdown();
         finish();
     }
 }
