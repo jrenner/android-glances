@@ -10,12 +10,10 @@
         android:background="#110017" >
         <TextView
             style="@style/MonitorTableHeader"
-            android:id="@+id/nameText"
-            android:text="Name" />
+            android:id="@+id/nameText" />
         <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/updateAgeText"
-            android:text="Age"
             android:layout_width="wrap_content"
             android:gravity="right"
             android:layout_gravity="right"
@@ -32,7 +30,6 @@
         android:id="@+id/updateTimeText" />
     <TextView
         style="@style/MonitorTableHeader"
-        android:text="CPU"
         android:id="@+id/CPUHeader"/>
     <TextView
         style="@style/MonitorTableTextView"
@@ -42,25 +39,24 @@
         android:id="@+id/cpuLoad" />
     <TextView
         style="@style/MonitorTableHeader"
-        android:text="Memory" />
+        android:id="@+id/memoryHeader"/>
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/memory" />
     <TextView
             style="@style/MonitorTableHeader"
-            android:text="Network Interfaces" />
+            android:id="@+id/netHeader" />
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/nets" />
     <TextView
             style="@style/MonitorTableHeader"
-            android:text="File Systems" />
+            android:id="@+id/fsHeader"/>
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/fileSystems" />
     <TextView
             style="@style/MonitorTableHeader"
-            android:text="Processes"
             android:id="@+id/procHeader"/>
     <TextView
             style="@style/MonitorTableTextView"

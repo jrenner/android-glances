@@ -20,6 +20,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.jrenner.androidglances.TextSetter.*;
+
 public class MonitorFragment extends Fragment {
     private static MonitorFragment instance;
     private static final String TAG = "Glances-MonitorFrag";
@@ -36,10 +38,13 @@ public class MonitorFragment extends Fragment {
     private TextView cpuHeader;
     private TextView cpuUsage;
     private TextView cpuLoad;
+    private TextView memoryHeader;
     private TextView memory;
     private TextView swap;
+    private TextView netHeader;
     private TextView nets;
     private TextView diskIO;
+    private TextView fsHeader;
     private TextView fileSystems;
     private TextView hddTemp;
     private TextView sensors;
@@ -94,8 +99,11 @@ public class MonitorFragment extends Fragment {
         cpuHeader = (TextView) view.findViewById(R.id.CPUHeader);
         cpuUsage = (TextView) view.findViewById(R.id.cpuUsage);
         cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
+        memoryHeader = (TextView) view.findViewById(R.id.memoryHeader);
         memory = (TextView) view.findViewById(R.id.memory);
+        netHeader = (TextView) view.findViewById(R.id.netHeader);
         nets = (TextView) view.findViewById(R.id.nets);
+        fsHeader = (TextView) view.findViewById(R.id.fsHeader);
         fileSystems = (TextView) view.findViewById(R.id.fileSystems);
         procHeader = (TextView) view.findViewById(R.id.procHeader);
         processes = (TextView) view.findViewById(R.id.processes);
@@ -161,58 +169,15 @@ public class MonitorFragment extends Fragment {
         } else {
             nameText.setText(monitored.nickName);
             serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern("HH:mm:ss z");
-            String formattedNow = sdf.format(monitored.now);
-            updateTimeText.setText(formattedNow);
-            systemText.setText(monitored.systemInfo.toString());
-            cpuHeader.setText(String.format("CPU (%d cores)", monitored.cores));
-            Log.i("TAG", "I see " + monitored.cores + " cores on " + monitored.nickName);
-            cpuUsage.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", 100 - monitored.cpu.getIdle(),
-                    monitored.cpu.getUser(), monitored.cpu.getSystem()));
-            cpuLoad.setText(String.format("Load (1/5/15min): %3.2f, %3.2f, %3.2f",
-                    monitored.load.getMin1(), monitored.load.getMin5(), monitored.load.getMin15()));
-            memory.setText(monitored.memory.toString());
-            String netData = "";
-            for (NetworkInterface net : monitored.netInterfaces) {
-                if (!"".equals(netData)) {
-                    netData += "\n";
-                }
-                netData += net.toString();
-            }
-            nets.setText(netData);
-            String fsData = "";
-            for (FileSystem fs : monitored.fileSystems) {
-                if (!"".equals(fsData)) {
-                    fsData += "\n";
-                }
-                fsData += fs.toString();
-            }
-            fileSystems.setText(fsData);
-            if (monitored.processes != null) {
-                procHeader.setText("Top Processes:");
-                String procData = "";
-                Collections.sort(monitored.processes, new Comparator<Process>(){
-                    public int compare(Process p1, Process p2){
-                        if(p1.getCpuPercent() == p2.getCpuPercent())
-                            return 0;
-                        return p1.getCpuPercent() > p2.getCpuPercent() ? -1 : 1;
-                    }
-                });
-                int count = 0;
-                int numToAdd = 5;
-                for (Process proc : monitored.processes) {
-                    if (count >= numToAdd) {
-                        break;
-                    }
-                    if (!"".equals(procData)) {
-                        procData += "\n";
-                    }
-                    procData += proc.toString();
-                    count++;
-                }
-                processes.setText(procData);
-            }
+            setNow(updateTimeText, monitored.now);
+            setSystemInfo(systemText, monitored.systemInfo);
+            setCPUHeader(cpuHeader, monitored.cores);
+            setCPUUsage(cpuUsage, monitored.cpu);
+            setCPULoad(cpuLoad, monitored.load);
+            setMemory(memoryHeader, memory, monitored.memory);
+            setNetworks(netHeader, nets, monitored.netInterfaces);
+            setFileSystems(fsHeader, fileSystems, monitored.fileSystems);
+            setProcesses(procHeader, processes, monitored.processes);
             Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
             monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
@@ -242,8 +207,6 @@ public class MonitorFragment extends Fragment {
 
     public void shutdown() {
         stopUpdates();
-        updateTimer = null;
-        updateHandler = null;
     }
 
 /*    private boolean isNetSignificant(NetworkInterface net) {
