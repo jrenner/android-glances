@@ -46,10 +46,13 @@ public class MonitorFragment extends Fragment {
     private TextView diskIO;
     private TextView fsHeader;
     private TextView fileSystems;
+    private TextView hddTempHeader;
     private TextView hddTemp;
+    private TextView sensorsHeader;
     private TextView sensors;
     private TextView procHeader;
     private TextView processes;
+    private TextView[] allTexts;
     private Toast startUpdatesToast;
     private Toast stopUpdatesToast;
     private long lastUpdateTime;
@@ -107,7 +110,22 @@ public class MonitorFragment extends Fragment {
         fileSystems = (TextView) view.findViewById(R.id.fileSystems);
         procHeader = (TextView) view.findViewById(R.id.procHeader);
         processes = (TextView) view.findViewById(R.id.processes);
+        hddTempHeader = (TextView) view.findViewById(R.id.hddTempHeader);
+        hddTemp = (TextView) view.findViewById(R.id.hddTemp);
+        sensorsHeader = (TextView) view.findViewById(R.id.sensorsHeader);
+        sensors = (TextView) view.findViewById(R.id.sensors);
+
+        allTexts = new TextView[]{updateTimeText, systemText, cpuUsage, cpuLoad, memory, swap, nets, diskIO, fileSystems,
+                hddTemp, sensors, processes};
         return view;
+    }
+
+    public void clearTextValues() {
+        for (TextView tv : allTexts) {
+            if (tv != null) {
+                tv.setText("");
+            }
+        }
     }
 
     public void addServerToList(String urltext, String nickName) {
@@ -122,6 +140,7 @@ public class MonitorFragment extends Fragment {
     }
 
     public void setServer(String urltext, String serverNickName) {
+        lastUpdateTime = 0;
         GlancesInstance selection = null;
         for (GlancesInstance server : allGlances) {
             if (server.nickName.equals(serverNickName)) {
@@ -132,7 +151,9 @@ public class MonitorFragment extends Fragment {
             Log.e(TAG, "Couldn't find server with name - " + serverNickName);
             return;
         }
+        clearTextValues();
         monitored = selection;
+        serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
         updateAgeText.setText("Waiting for update from server");
         nameText.setText("...");
     }
@@ -168,7 +189,6 @@ public class MonitorFragment extends Fragment {
             }
         } else {
             nameText.setText(monitored.nickName);
-            serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
             setNow(updateTimeText, monitored.now);
             setSystemInfo(systemText, monitored.systemInfo);
             setCPUHeader(cpuHeader, monitored.cores);
@@ -178,6 +198,8 @@ public class MonitorFragment extends Fragment {
             setNetworks(netHeader, nets, monitored.netInterfaces);
             setFileSystems(fsHeader, fileSystems, monitored.fileSystems);
             setProcesses(procHeader, processes, monitored.processes);
+            setSensors(sensorsHeader, sensors, monitored.sensors);
+            setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);
             Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
             monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update

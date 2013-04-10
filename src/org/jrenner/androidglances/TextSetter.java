@@ -105,8 +105,8 @@ public class TextSetter {
             if (!"".equals(fsData)) {
                 fsData += "\n";
             }
-            fsData += "\"" + fs.getMountPoint()+ "\" " + Glances.autoUnit(fs.getAvailable()) + " / " +
-                    Glances.autoUnit(fs.getSize()) + " available";
+            fsData += String.format("%s - (%s of %s available)", fs.getMountPoint(), Glances.autoUnit(fs.getAvailable()),
+                    Glances.autoUnit(fs.getSize()));
         }
         tv.setText(fsData);
         return true;
@@ -125,7 +125,7 @@ public class TextSetter {
             handleNull(tv);
             return false;
         }
-        header.setText("Top 5 Processes by CPU:");
+        header.setText("Top 5 Processes by CPU");
         if (processes.size() == 0) {
             tv.setText("Process data disabled by server");
             return true;
@@ -146,6 +146,40 @@ public class TextSetter {
             count++;
         }
         tv.setText(procData);
+        return true;
+    }
+
+    public static boolean setSensors(TextView header, TextView tv, List<Sensor> sensors) {
+        header.setText("Sensors");
+        if (sensors == null) {
+            handleNull(tv);
+            return false;
+        }
+        String sensorData = "";
+        for (Sensor sensor : sensors) {
+            if (!"".equals(sensorData)) {
+                sensorData += "\n";
+            }
+            sensorData += sensor.toString();
+        }
+        tv.setText(sensorData);
+        return true;
+    }
+
+    public static boolean setHDDTemp(TextView header, TextView tv, List<HardDriveTemp> hddtemps) {
+        header.setText("Hard Drive Temperatures");
+        if (hddtemps == null) {
+            handleNull(tv);
+            return false;
+        }
+        String hddtempData = "";
+        for (HardDriveTemp temp : hddtemps) {
+            if (!"".equals(hddtempData)) {
+                hddtempData += "\n";
+            }
+            hddtempData += temp.toString();
+        }
+        tv.setText(hddtempData);
         return true;
     }
 }

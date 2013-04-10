@@ -18,16 +18,17 @@
             android:gravity="right"
             android:layout_gravity="right"
             android:layout_alignParentRight="true"/>
-    </RelativeLayout>Layout>
+    </RelativeLayout>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/serverAddress" />
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/systemText"/>
     <TextView
         style="@style/MonitorTableTextView"
-        android:id="@+id/serverAddress" />
-    <TextView
-        style="@style/MonitorTableTextView"
         android:id="@+id/updateTimeText" />
+
     <TextView
         style="@style/MonitorTableHeader"
         android:id="@+id/CPUHeader"/>
@@ -37,29 +38,47 @@
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/cpuLoad" />
+
     <TextView
         style="@style/MonitorTableHeader"
         android:id="@+id/memoryHeader"/>
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/memory" />
+
     <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/netHeader" />
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/nets" />
+
     <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/fsHeader"/>
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/fileSystems" />
+
     <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/procHeader"/>
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/processes" />
+
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/hddTempHeader"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/hddTemp" />
+
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/sensorsHeader"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/sensors" />
 
 </LinearLayout>
