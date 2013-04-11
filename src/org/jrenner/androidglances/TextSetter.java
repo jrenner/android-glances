@@ -40,7 +40,7 @@ public class TextSetter {
 
     public static boolean setCPUHeader(TextView tv, Integer cores) {
         if (cores == null) {
-            handleNull(tv);
+            tv.setText("CPU");
             return false;
         }
         tv.setText(String.format("CPU (%d cores)", cores));
@@ -73,7 +73,21 @@ public class TextSetter {
             handleNull(tv);
             return false;
         }
-        tv.setText(mem.toString());
+        String memTotal = Glances.autoUnit(mem.getTotal());
+        String memUsed = Glances.autoUnit(mem.getUsed());
+        tv.setText(String.format("Total: %s, Used: %s", memTotal, memUsed));
+        return true;
+    }
+
+    public static boolean setSwap(TextView header, TextView tv, MemorySwap swap) {
+        header.setText("Swap");
+        if (swap == null) {
+            handleNull(tv);
+            return false;
+        }
+        String swapTotal = Glances.autoUnit(swap.getTotal());
+        String swapUsed = Glances.autoUnit(swap.getUsed());
+        tv.setText(String.format("Total: %s, Used: %s", swapTotal, swapUsed));
         return true;
     }
 
@@ -84,11 +98,17 @@ public class TextSetter {
             return false;
         }
         String netData = "";
+        String netRecv, netSend, netTotalRecv, netTotalSend;
         for (NetworkInterface net : nets) {
             if (!"".equals(netData)) {
                 netData += "\n";
             }
-            netData += net.toString();
+            netRecv = Glances.autoUnit(net.getRxPerSecond());
+            netSend = Glances.autoUnit(net.getTxPerSecond());
+            netTotalRecv = Glances.autoUnit(net.getCumulativeRx());
+            netTotalSend = Glances.autoUnit(net.getCumulativeTx());
+            netData += String.format("%s - Rx: %s/s (%s), Tx: %s/s (%s)", net.getInterfaceName(), netRecv,
+                    netTotalRecv, netSend, netTotalSend);
         }
         tv.setText(netData);
         return true;
@@ -105,10 +125,28 @@ public class TextSetter {
             if (!"".equals(fsData)) {
                 fsData += "\n";
             }
-            fsData += String.format("%s - (%s of %s available)", fs.getMountPoint(), Glances.autoUnit(fs.getAvailable()),
+            fsData += String.format("%s - %s/%s available", fs.getDeviceName(), Glances.autoUnit(fs.getAvailable()),
                     Glances.autoUnit(fs.getSize()));
         }
         tv.setText(fsData);
+        return true;
+    }
+
+    public static boolean setDiskIO(TextView header, TextView tv, List<DiskIO> disks) {
+        header.setText("Disk IO");
+        if (disks == null) {
+            handleNull(tv);
+            return false;
+        }
+        String diskData = "";
+        for (DiskIO disk : disks) {
+            if (!"".equals(diskData)) {
+                diskData += "\n";
+            }
+            diskData += String.format("%s: Read %s/s, Write %s/s", disk.getDiskName(),
+                    Glances.autoUnit(disk.getBytesReadPerSec()), Glances.autoUnit(disk.getBytesWrittenPerSec()));
+        }
+        tv.setText(diskData);
         return true;
     }
 

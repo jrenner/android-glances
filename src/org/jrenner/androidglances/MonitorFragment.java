@@ -40,9 +40,11 @@ public class MonitorFragment extends Fragment {
     private TextView cpuLoad;
     private TextView memoryHeader;
     private TextView memory;
+    private TextView swapHeader;
     private TextView swap;
     private TextView netHeader;
     private TextView nets;
+    private TextView diskIOHeader;
     private TextView diskIO;
     private TextView fsHeader;
     private TextView fileSystems;
@@ -104,10 +106,14 @@ public class MonitorFragment extends Fragment {
         cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
         memoryHeader = (TextView) view.findViewById(R.id.memoryHeader);
         memory = (TextView) view.findViewById(R.id.memory);
+        swapHeader = (TextView) view.findViewById(R.id.swapHeader);
+        swap = (TextView) view.findViewById(R.id.swap);
         netHeader = (TextView) view.findViewById(R.id.netHeader);
         nets = (TextView) view.findViewById(R.id.nets);
         fsHeader = (TextView) view.findViewById(R.id.fsHeader);
         fileSystems = (TextView) view.findViewById(R.id.fileSystems);
+        diskIOHeader = (TextView) view.findViewById(R.id.diskIOHeader);
+        diskIO = (TextView) view.findViewById(R.id.diskIO);
         procHeader = (TextView) view.findViewById(R.id.procHeader);
         processes = (TextView) view.findViewById(R.id.processes);
         hddTempHeader = (TextView) view.findViewById(R.id.hddTempHeader);
@@ -195,8 +201,10 @@ public class MonitorFragment extends Fragment {
             setCPUUsage(cpuUsage, monitored.cpu);
             setCPULoad(cpuLoad, monitored.load);
             setMemory(memoryHeader, memory, monitored.memory);
+            setSwap(swapHeader, swap, monitored.memorySwap);
             setNetworks(netHeader, nets, monitored.netInterfaces);
             setFileSystems(fsHeader, fileSystems, monitored.fileSystems);
+            setDiskIO(diskIOHeader, diskIO, monitored.diskIO);
             setProcesses(procHeader, processes, monitored.processes);
             setSensors(sensorsHeader, sensors, monitored.sensors);
             setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);

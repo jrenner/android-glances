@@ -48,6 +48,13 @@
 
     <TextView
             style="@style/MonitorTableHeader"
+            android:id="@+id/swapHeader"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/swap" />
+
+    <TextView
+            style="@style/MonitorTableHeader"
             android:id="@+id/netHeader" />
     <TextView
             style="@style/MonitorTableTextView"
@@ -59,6 +66,13 @@
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/fileSystems" />
+
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/diskIOHeader"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/diskIO" />
 
     <TextView
             style="@style/MonitorTableHeader"
