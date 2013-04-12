@@ -13,23 +13,24 @@ public class Tools {
         long h = 0;
         long d = 0;
         long w = 0;
-        if (ms > WEEK) {
+        if (ms >= WEEK) {
             w = ms / WEEK;
             return w + "w";
         }
-        if (ms > DAY) {
+        if (ms >= DAY) {
             d = ms / DAY;
             return d + "d";
         }
-        if (ms > HOUR) {
+        if (ms >= HOUR) {
             h = ms / HOUR;
-            return h + "h";
+            m = (ms % HOUR) / MINUTE;
+            return h + "h" + m + "m";
         }
-        if (ms > MINUTE) {
+        if (ms >= MINUTE) {
             m = ms / MINUTE;
             return m + "m";
         }
-        if (ms > SECOND) {
+        if (ms >= SECOND) {
             s = ms / SECOND;
             return s + "s";
         }

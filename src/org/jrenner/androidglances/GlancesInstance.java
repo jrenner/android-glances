@@ -124,4 +124,9 @@ public class GlancesInstance {
         protected void onPostExecute(Boolean updateOK) {
         }
     }
+
+    @Override
+    public String toString() {
+        return this.nickName;
+    }
 }

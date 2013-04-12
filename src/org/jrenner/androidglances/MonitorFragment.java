@@ -54,6 +54,8 @@ public class MonitorFragment extends Fragment {
     private TextView sensors;
     private TextView procHeader;
     private TextView processes;
+
+    private TextView[] allHeaders;
     private TextView[] allTexts;
     private Toast startUpdatesToast;
     private Toast stopUpdatesToast;
@@ -78,17 +80,8 @@ public class MonitorFragment extends Fragment {
         startUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Started updates", Toast.LENGTH_SHORT);
         stopUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Stopped updates", Toast.LENGTH_SHORT);
         allGlances = new ArrayList<GlancesInstance>();
-        addServerToList("http://home.jrenner.org:7113", "Raspberry Pi");
-        addServerToList("http://192.168.173.103:61209", "Ubuntu PC");
-
-/*        addServerToList("http://192.168.173.103:28100", "Test 0");
-        addServerToList("http://192.168.173.103:28101", "Test 1");
-        addServerToList("http://192.168.173.103:28102", "Test 2");
-        addServerToList("http://192.168.173.103:28103", "Test 3");
-        addServerToList("http://192.168.173.103:28104", "Test 4");*/
 
         startUpdates();
-
     }
 
     @Override
@@ -121,8 +114,10 @@ public class MonitorFragment extends Fragment {
         sensorsHeader = (TextView) view.findViewById(R.id.sensorsHeader);
         sensors = (TextView) view.findViewById(R.id.sensors);
 
+        allHeaders = new TextView[]{nameText, cpuHeader, memoryHeader, swapHeader, netHeader, fsHeader, diskIOHeader,
+                     procHeader, hddTempHeader, sensorsHeader};
         allTexts = new TextView[]{updateTimeText, systemText, cpuUsage, cpuLoad, memory, swap, nets, diskIO, fileSystems,
-                hddTemp, sensors, processes};
+                   hddTemp, sensors, processes};
         return view;
     }
 
@@ -132,6 +127,18 @@ public class MonitorFragment extends Fragment {
                 tv.setText("");
             }
         }
+    }
+
+    public void clearHeaderValues() {
+        for (TextView tv: allHeaders) {
+            if (tv != null) {
+                tv.setText("");
+            }
+        }
+    }
+
+    public List<GlancesInstance> getAllGlancesServers() {
+        return allGlances;
     }
 
     public void addServerToList(String urltext, String nickName) {
@@ -145,11 +152,24 @@ public class MonitorFragment extends Fragment {
         allGlances.add(new GlancesInstance(url, nickName));
     }
 
+    /**
+     * return true if removed
+     */
+    public boolean removeServerFromList(String urltext, String  nickName) {
+        for (GlancesInstance server : allGlances) {
+            if (server.nickName.equals(nickName) && server.url.toString().equals(urltext)) {
+                allGlances.remove(server);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void setServer(String urltext, String serverNickName) {
         lastUpdateTime = 0;
         GlancesInstance selection = null;
         for (GlancesInstance server : allGlances) {
-            if (server.nickName.equals(serverNickName)) {
+            if (server.nickName.equals(serverNickName) && server.url.toString().equals(urltext)) {
                 selection = server;
             }
         }
@@ -157,11 +177,12 @@ public class MonitorFragment extends Fragment {
             Log.e(TAG, "Couldn't find server with name - " + serverNickName);
             return;
         }
+        clearHeaderValues();
         clearTextValues();
         monitored = selection;
         serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
         updateAgeText.setText("Waiting for update from server");
-        nameText.setText("...");
+        nameText.setText("");
     }
 
     void threadReport() {
@@ -238,18 +259,4 @@ public class MonitorFragment extends Fragment {
     public void shutdown() {
         stopUpdates();
     }
-
-/*    private boolean isNetSignificant(NetworkInterface net) {
-        long CUMUL_THRESHOLD = 1024 * 1000 * 10; // about 10 megabytes
-        long cumulativeTotal = net.getCumulativeRx() + net.getCumulativeTx();
-        if (cumulativeTotal > CUMUL_THRESHOLD) {
-            return true;
-        }
-        long SPEED_THRESHOLD = 1024 * 10; // about 5 kB/s
-        long currentTotal = net.getRxPerSecond() + net.getTxPerSecond();
-        if (currentTotal > SPEED_THRESHOLD) {
-            return true;
-        }
-        return false;
-    }*/
 }

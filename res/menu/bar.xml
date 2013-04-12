@@ -2,9 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
 
-    <item
-            android:id="@+id/action_quit"
-            android:showAsAction="always"
-            android:title="Quit" />
+    <item android:id="@+id/action_addserver"
+          android:showAsAction="always"
+          android:title="Add" />
+    <item android:id="@+id/action_removeserver"
+          android:showAsAction="always"
+          android:title="Remove" />
+    <item android:id="@+id/action_quit"
+          android:showAsAction="always"
+          android:title="Quit" />
 
 </menu>
