@@ -4,37 +4,6 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:id="@+id/mainLayout">
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center" >
-        <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="PC"
-                android:id="@+id/pcButton"/>
-        <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Pi"
-                android:id="@+id/raspberryButton"/>
-        <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Quit"
-                android:id="@+id/quitButton"/>
-        <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Stop"
-                android:id="@+id/stopButton"/>
-    </LinearLayout>
-
     <ScrollView
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"

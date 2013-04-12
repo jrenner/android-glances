@@ -5,7 +5,8 @@ Dependencies:
 		and it's dependencies:
 		- Google gson
 		- Apache XML-RPC
-		- SLF4J
+		- SLF4J (should use android version)
+- ActionBarSherlock
 
 How to use:
 	- build yourself, or grab the .apk file from the bin directory (not yet available)

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:background="#110017" >
+        android:background="#111" >
         <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/nameText" />
