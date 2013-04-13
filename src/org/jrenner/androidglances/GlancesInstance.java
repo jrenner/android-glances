@@ -16,7 +16,7 @@ import java.util.concurrent.TimeoutException;
 
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
-    private static final long updateInterval = 5000; // milliseconds
+    private static final long updateInterval = 3000; // milliseconds
     public URL url;
     public String nickName;
     private Glances glances;
@@ -42,20 +42,16 @@ public class GlancesInstance {
 
 
 
-    public GlancesInstance(URL url, String nickName) {
+    public GlancesInstance(URL url, String nickName) throws MalformedURLException {
         setNewServer(url, nickName);
     }
 
-    public void setNewServer(URL url, String nickName) {
-        Log.i(TAG, "Starting monitoring new server: " + nickName + " - " + url.toString());
+    public void setNewServer(URL url, String nickName) throws MalformedURLException {
         this.url = url;
         this.nickName = nickName;
-        try {
-            this.glances = new Glances(url);
-        } catch (MalformedURLException e) {
-            Log.e(TAG, e.toString());
-        }
+        this.glances = new Glances(url);
         monitorStartTime = System.currentTimeMillis();
+        Log.i(TAG, "Starting monitoring new server: " + nickName + " - " + url.toString());
     }
 
     public void update() {

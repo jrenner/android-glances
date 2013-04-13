@@ -60,6 +60,8 @@ public class MonitorFragment extends Fragment {
     private Toast startUpdatesToast;
     private Toast stopUpdatesToast;
     private long lastUpdateTime;
+    private long connectStartTime; // time of trying to get first update from a server after start of monitoring
+    private static final String connectText = "Trying to connect to server";
 
     private MonitorFragment() {
 
@@ -141,24 +143,46 @@ public class MonitorFragment extends Fragment {
         return allGlances;
     }
 
+    public String[] getServerNames() {
+        String[] result = new String[allGlances.size()];
+        int i = 0;
+        for (GlancesInstance server : allGlances) {
+            result[i++] = server.nickName;
+        }
+        return result;
+    }
+
     public void addServerToList(String urltext, String nickName) {
         URL url = null;
+        GlancesInstance newServer = null;
         try {
             url = new URL(urltext);
+            Log.v(TAG, "Adding Glances server to list: " + urltext + " - " + nickName);
+            newServer = new GlancesInstance(url, nickName);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
+            Toast.makeText(getActivity(), "Invalid URL: " + urltext, Toast.LENGTH_LONG).show();
+            return;
         }
-        Log.v(TAG, "Adding Glances server to list: " + urltext + nickName);
-        allGlances.add(new GlancesInstance(url, nickName));
+        allGlances.add(newServer);
+        redrawActionBar();
+    }
+
+    void redrawActionBar() {
+        //Log.v(TAG, "Menu item changed - invalidating action bar to cause redraw");
+        getActivity().invalidateOptionsMenu();
     }
 
     /**
      * return true if removed
      */
-    public boolean removeServerFromList(String urltext, String  nickName) {
+    public boolean removeServerFromList(String nickName) {
         for (GlancesInstance server : allGlances) {
-            if (server.nickName.equals(nickName) && server.url.toString().equals(urltext)) {
+            if (server.nickName.equals(nickName)) {
+                Log.i(TAG, "Removing server: " + nickName);
                 allGlances.remove(server);
+                doNotMonitor();
+                redrawActionBar();
                 return true;
             }
         }
@@ -181,8 +205,17 @@ public class MonitorFragment extends Fragment {
         clearTextValues();
         monitored = selection;
         serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
-        updateAgeText.setText("Waiting for update from server");
+        updateAgeText.setText(connectText);
+        connectStartTime = System.currentTimeMillis();
         nameText.setText("");
+    }
+
+    public void doNotMonitor() {
+        clearHeaderValues();
+        clearTextValues();
+        serverAddress.setText("No server selected");
+        updateAgeText.setText("");
+        monitored = null;
     }
 
     void threadReport() {
@@ -198,21 +231,27 @@ public class MonitorFragment extends Fragment {
 
     private void update() {
         //threadReport();
-        for (GlancesInstance server : allGlances) {
+
+        // This code is for updating multiple servers concurrently, which is currently disabled
+      /*for (GlancesInstance server : allGlances) {
             if (!server.isUpdateExecuting()) {
                 server.update();
             }
-        }
+        }*/
         if (monitored == null) {
             //Log.v(TAG, "No server being monitored, nothing to do.");
             return;
         }
+        monitored.update();
         if (!monitored.isUpdateWaiting()) {
             //Log.v(TAG, "No update waiting for monitored server: " + monitored.nickName);
             if (lastUpdateTime != 0) {
                 long monitorTime = System.currentTimeMillis() - monitored.monitorStartTime;
                 long updateAge = System.currentTimeMillis() - lastUpdateTime;
                 updateAgeText.setText(Tools.convertToHumanTime(updateAge) + " old, monitored for " + Tools.convertToHumanTime(monitorTime));
+            } else {
+                long waitTime = System.currentTimeMillis() - connectStartTime;
+                updateAgeText.setText(connectText + " " + Tools.convertToHumanTime(waitTime));
             }
         } else {
             nameText.setText(monitored.nickName);
@@ -258,5 +297,10 @@ public class MonitorFragment extends Fragment {
 
     public void shutdown() {
         stopUpdates();
+    }
+
+    public void deleteAllServers() {
+        doNotMonitor();
+        allGlances.clear();
     }
 }

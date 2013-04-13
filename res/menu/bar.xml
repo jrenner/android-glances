@@ -8,6 +8,9 @@
     <item android:id="@+id/action_removeserver"
           android:showAsAction="always"
           android:title="Remove" />
+    <item android:id="@+id/action_remove_all"
+          android:showAsAction="never"
+          android:title="Remove All" />
     <item android:id="@+id/action_quit"
           android:showAsAction="always"
           android:title="Quit" />

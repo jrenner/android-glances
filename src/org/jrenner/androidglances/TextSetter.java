@@ -75,7 +75,7 @@ public class TextSetter {
         }
         String memTotal = Glances.autoUnit(mem.getTotal());
         String memUsed = Glances.autoUnit(mem.getUsed());
-        tv.setText(String.format("Total: %s, Used: %s", memTotal, memUsed));
+        tv.setText(String.format("Used %s / %s", memUsed, memTotal));
         return true;
     }
 
@@ -87,7 +87,7 @@ public class TextSetter {
         }
         String swapTotal = Glances.autoUnit(swap.getTotal());
         String swapUsed = Glances.autoUnit(swap.getUsed());
-        tv.setText(String.format("Total: %s, Used: %s", swapTotal, swapUsed));
+        tv.setText(String.format("Used: %s / %s", swapUsed, swapTotal));
         return true;
     }
 
@@ -125,7 +125,7 @@ public class TextSetter {
             if (!"".equals(fsData)) {
                 fsData += "\n";
             }
-            fsData += String.format("%s - %s/%s available", fs.getDeviceName(), Glances.autoUnit(fs.getAvailable()),
+            fsData += String.format("%s - %s / %s available", fs.getDeviceName(), Glances.autoUnit(fs.getAvailable()),
                     Glances.autoUnit(fs.getSize()));
         }
         tv.setText(fsData);
