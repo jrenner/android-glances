@@ -13,5 +13,5 @@ The primary use is to monitor a machine over a network.</b>
 - ActionBarSherlock
 
 <h3>How to use</h3>
-[Download](http://github.com/jrenner/android-glances/raw/master/bin/android_glances.apk) the .apk
-from the [/bin directory](https://github.com/jrenner/android-glances/tree/master/bin).
+Get 'Android Glances' from the Google Play store.<br>
+Or build an .apk yourself.
