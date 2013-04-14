@@ -6,12 +6,11 @@ The primary use is to monitor a machine over a network.</b>
 
 <h3>Dependencies</h3>
 - java-glances<br>
-- and it's dependencies:
+    * (and it's dependencies):
 	* Google gson
 	* Apache XML-RPC
 - SLF4J (should use android version)
 - ActionBarSherlock
 
 <h3>How to use</h3>
-Get 'Android Glances' from the Google Play store.<br>
-Or build an .apk yourself.
+Get [Android Glances](https://play.google.com/store/apps/details?id=org.jrenner.androidglances) from the Google Play store.
