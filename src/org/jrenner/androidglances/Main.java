@@ -39,17 +39,6 @@ public class Main extends SherlockFragmentActivity {
         abar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
 
         loadServers();
-
-/*        monitorFrag.addServerToList("http://home.jrenner.org:7113", "Raspberry Pi");
-        monitorFrag.addServerToList("http://192.168.173.103:61209", "Ubuntu PC");*/
-
-        // Test servers
-/*        monitorFrag.addServerToList("http://192.168.173.103:28100", "Alpha");
-        monitorFrag.addServerToList("http://192.168.173.103:28101", "Beta");
-        monitorFrag.addServerToList("http://192.168.173.103:28102", "Gamma");
-        monitorFrag.addServerToList("http://192.168.173.103:28103", "Delta");
-        monitorFrag.addServerToList("http://192.168.173.103:28104", "Eta");*/
-
     }
 
     @Override
