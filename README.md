@@ -6,7 +6,7 @@ The primary use is to monitor a machine over a network.</b>
 
 <h3>Dependencies</h3>
 - java-glances<br>
-    * (and it's dependencies):
+    * (and its dependencies):
 	* Google gson
 	* Apache XML-RPC
 - SLF4J (should use android version)
