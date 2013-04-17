@@ -1,14 +1,26 @@
 package org.jrenner.androidglances;
 
-import android.widget.TextView;
-import org.jrenner.glances.*;
-import org.jrenner.glances.Process;
-
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+
+import org.jrenner.glances.Cpu;
+import org.jrenner.glances.DiskIO;
+import org.jrenner.glances.FileSystem;
+import org.jrenner.glances.Glances;
+import org.jrenner.glances.HardDriveTemp;
+import org.jrenner.glances.Load;
+import org.jrenner.glances.Memory;
+import org.jrenner.glances.MemorySwap;
+import org.jrenner.glances.NetworkInterface;
+import org.jrenner.glances.Process;
+import org.jrenner.glances.Sensor;
+import org.jrenner.glances.SystemInfo;
+
+import android.content.res.Resources;
+import android.widget.TextView;
 
 public class TextSetter {
     private static final String NO_DATA = "No data";
@@ -40,10 +52,10 @@ public class TextSetter {
 
     public static boolean setCPUHeader(TextView tv, Integer cores) {
         if (cores == null) {
-            tv.setText("CPU");
+            tv.setText(Resources.getSystem().getString(R.string.cpu));
             return false;
         }
-        tv.setText(String.format("CPU (%d cores)", cores));
+        tv.setText(Resources.getSystem().getString(R.string.cpu_cores, cores));
         return true;
     }
 
@@ -68,7 +80,7 @@ public class TextSetter {
     }
 
     public static boolean setMemory(TextView header, TextView tv, Memory mem) {
-        header.setText("Memory");
+        header.setText(Resources.getSystem().getString(R.string.memory));
         if (mem == null) {
             handleNull(tv);
             return false;
@@ -80,7 +92,7 @@ public class TextSetter {
     }
 
     public static boolean setSwap(TextView header, TextView tv, MemorySwap swap) {
-        header.setText("Swap");
+        header.setText(Resources.getSystem().getString(R.string.swap));
         if (swap == null) {
             handleNull(tv);
             return false;
@@ -92,7 +104,7 @@ public class TextSetter {
     }
 
     public static boolean setNetworks(TextView header, TextView tv, List<NetworkInterface> nets) {
-        header.setText("Network Interfaces");
+        header.setText(Resources.getSystem().getString(R.string.network_interfaces));
         if (nets == null) {
             handleNull(tv);
             return false;
@@ -115,7 +127,7 @@ public class TextSetter {
     }
 
     public static boolean setFileSystems(TextView header, TextView tv, List<FileSystem> fileSystems) {
-        header.setText("File Systems");
+        header.setText(Resources.getSystem().getString(R.string.file_systems));
         if (fileSystems == null) {
             handleNull(tv);
             return false;
@@ -133,7 +145,7 @@ public class TextSetter {
     }
 
     public static boolean setDiskIO(TextView header, TextView tv, List<DiskIO> disks) {
-        header.setText("Disk IO");
+        header.setText(Resources.getSystem().getString(R.string.disk_io));
         if (disks == null) {
             handleNull(tv);
             return false;
@@ -191,7 +203,7 @@ public class TextSetter {
     }
 
     public static boolean setSensors(TextView header, TextView tv, List<Sensor> sensors) {
-        header.setText("Sensors");
+        header.setText(Resources.getSystem().getString(R.string.sensors));
         if (sensors == null) {
             handleNull(tv);
             return false;
@@ -208,7 +220,7 @@ public class TextSetter {
     }
 
     public static boolean setHDDTemp(TextView header, TextView tv, List<HardDriveTemp> hddtemps) {
-        header.setText("Hard Drive Temperatures");
+        header.setText(Resources.getSystem().getString(R.string.hard_drive_temperature));
         if (hddtemps == null) {
             handleNull(tv);
             return false;

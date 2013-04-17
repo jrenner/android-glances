@@ -6,24 +6,24 @@
               android:layout_height="match_parent">
     <TextView
             style="@style/DialogItemTitle"
-            android:text="IP or Hostname" />
+            android:text="@string/ip_hostname" />
     <EditText
             style="@style/DialogEditText"
             android:id="@+id/server_url_edittext"
-            android:hint="server.example.com"/>
+            android:hint="@string/server_url_hint"/>
 
     <TextView
             style="@style/DialogItemTitle"
-            android:text="Port" />
+            android:text="@string/port" />
     <EditText
             style="@style/DialogEditText"
             android:id="@+id/server_port_edittext"
-            android:text="61209"
-            android:hint="61209"/>
+            android:text="@string/default_port"
+            android:hint="@string/default_port"/>
 
     <TextView
             style="@style/DialogItemTitle"
-            android:text="Password (empty for none)" />
+            android:text="@string/password" />
     <EditText
             style="@style/DialogEditText"
             android:id="@+id/server_password_edittext"
@@ -31,10 +31,10 @@
 
     <TextView
             style="@style/DialogItemTitle"
-            android:text="Server name" />
+            android:text="@string/server_name" />
     <EditText
             style="@style/DialogEditText"
             android:id="@+id/server_name_edittext"
-            android:hint="Home PC" />
+            android:hint="@string/server_name_hint" />
 
 </LinearLayout>

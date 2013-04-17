@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Android Glances</string>
+    
+    <string name="ip_hostname">IP or Hostname</string>
+    <string name="port">Port</string>
+    <string name="password">Password (empty for none)</string>
+    <string name="server_name">Server name</string>
+    <string name="server_name_hint">Home PC</string>
+    <string name="server_url_hint">server.example.com</string>
+    <string name="default_port">61209</string>
+    
+    <string name="action_add">Add</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_quit">Quit</string>
+    
+    <string name="hard_drive_temperature">Hard Drive Temperatures</string>
+    <string name="sensors">Sensors</string>
+    <string name="cpu">CPU</string>
+    <string name="memory">Memory</string>
+    <string name="swap">Swap</string>
+    <string name="network_interfaces">Network Interfaces</string>
+    <string name="file_systems">File Systems</string>
+    <string name="disk_io">Disk IO</string>
+    <string name="cpu_cores">CPU (%d cores)</string>
+    
+    <string name="add_server">Add a server</string>
+    <string name="edit_server">Edit server details</string>
+    <string name="remove_server">Remove a server</string>
+    
+    <string name="ok">Ok</string>
+    <string name="cancel">Cancel</string>
 </resources>
