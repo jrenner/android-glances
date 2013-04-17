@@ -16,4 +16,18 @@
         <item name="android:layout_marginLeft">18dp</item>
         <item name="android:layout_marginRight">6dp</item>
     </style>
+    <style name="DialogItemTitle" parent="@android:style/TextAppearance.Medium">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">6dp</item>
+        <item name="android:textColor">#CCA</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="DialogEditText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+        <item name="android:inputType">text</item>
+    </style>
 </resources>

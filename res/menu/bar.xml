@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
 
-    <item android:id="@+id/action_addserver"
+    <item android:id="@+id/action_add_server"
           android:showAsAction="always"
           android:title="Add" />
-    <item android:id="@+id/action_removeserver"
+    <item android:id="@+id/action_remove_server"
           android:showAsAction="always"
-          android:title="Remove" />
-    <item android:id="@+id/action_remove_all"
-          android:showAsAction="never"
-          android:title="Remove All" />
+          android:title="Del" />
+    <item android:id="@+id/action_edit_server"
+          android:showAsAction="always"
+          android:title="Edit" />
     <item android:id="@+id/action_quit"
           android:showAsAction="always"
           android:title="Quit" />

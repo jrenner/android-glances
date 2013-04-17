@@ -2,6 +2,7 @@ package org.jrenner.androidglances;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import org.apache.xmlrpc.XmlRpcException;
 import org.jrenner.glances.*;
 import org.jrenner.glances.Process;
 
@@ -10,15 +11,15 @@ import java.net.URL;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+
+import static org.jrenner.androidglances.Constants.*;
 
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
     private static final long updateInterval = 3000; // milliseconds
     public URL url;
     public String nickName;
+    protected String password;
     private Glances glances;
     Date now;
     Cpu cpu;
@@ -39,17 +40,17 @@ public class GlancesInstance {
     public boolean updateExecuting; // used to run only one update task at a time
     long monitorStartTime;
     InstanceUpdater instanceUpdater;
+    private UPDATE_ERROR errorCode;
 
-
-
-    public GlancesInstance(URL url, String nickName) throws MalformedURLException {
-        setNewServer(url, nickName);
+    public GlancesInstance(URL url, String nickName, String password) throws MalformedURLException {
+        setNewServer(url, nickName, password);
     }
 
-    public void setNewServer(URL url, String nickName) throws MalformedURLException {
+    private void setNewServer(URL url, String nickName, String password) throws MalformedURLException {
         this.url = url;
         this.nickName = nickName;
-        this.glances = new Glances(url);
+        this.password = password;
+        this.glances = new Glances(url.toString(), password);
         monitorStartTime = System.currentTimeMillis();
         Log.i(TAG, "Starting monitoring new server: " + nickName + " - " + url.toString());
     }
@@ -75,6 +76,14 @@ public class GlancesInstance {
         //Log.v(TAG, "updateWaiting set to: " + status);
     }
 
+    public UPDATE_ERROR getErrorCode() {
+        return errorCode;
+    }
+
+    public void setErrorCode(UPDATE_ERROR code) {
+        errorCode = code;
+    }
+
     private class InstanceUpdater extends AsyncTask<Glances, Void, Void> {
         @Override
         protected Void doInBackground(Glances... glancesList) {
@@ -82,11 +91,10 @@ public class GlancesInstance {
             for (int i = 0; i < length; i++) {
                 Glances current = glancesList[i];
                 long updateStartTime = System.currentTimeMillis();
+                Object[] allFields = new Object[]{now, cpu, memory, memorySwap, systemInfo, netInterfaces, fileSystems,
+                                     load, diskIO, limits, hddTemps, processes, procCount, sensors, cores};
                 try {
                     now = current.getNow();
-                } catch (ParseException e) {
-                    Log.w(TAG, "GetNow() - " + e.toString());
-                }
                     cpu = current.getCpu();
                     memory = current.getMem();
                     memorySwap = current.getMemSwap();
@@ -101,13 +109,32 @@ public class GlancesInstance {
                     procCount = current.getProcessCount();
                     sensors = current.getSensors();
                     cores = current.getCore();
-                    float timeTaken = (float) (System.currentTimeMillis() - updateStartTime) / 1000;
-                    if (now != null) {
-                        Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
-                        setUpdateWaiting(true);
-                    } else {
-                        Log.e(TAG, String.format("Failed to get update for %s after %.1fs", nickName, timeTaken));
+                } catch (ParseException e) {
+                    Log.w(TAG, "GetNow() - " + e.toString());
+                } catch (XmlRpcException e) {
+                    String error = e.toString();
+                    Log.e(TAG, error);
+                    if (error.contains("Authentication failed")) {
+                        setErrorCode(UPDATE_ERROR.AUTH_FAILED);
+                    } else if (error.contains("Connection refused")) {
+                        setErrorCode(UPDATE_ERROR.CONN_REFUSED);
                     }
+                }
+                float timeTaken = (float) (System.currentTimeMillis() - updateStartTime) / 1000;
+                int fieldsRetrieved = 0;
+                for (Object field : allFields) {
+                    if (field != null) {
+                        fieldsRetrieved++;
+                    }
+                }
+                if (now != null) {
+                    Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
+                    setUpdateWaiting(true);
+                } else {
+                    String msg = String.format("Only retrieved %d / %d data fields from server after %.1fs",
+                            fieldsRetrieved, allFields.length, timeTaken);
+                    Log.e(TAG, msg);
+                }
             }
             try {
                 Thread.sleep(updateInterval);

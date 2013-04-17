@@ -1,5 +1,6 @@
 package org.jrenner.androidglances;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,18 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import org.jrenner.glances.FileSystem;
-import org.jrenner.glances.Glances;
-import org.jrenner.glances.NetworkInterface;
-import org.jrenner.glances.Process;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static org.jrenner.androidglances.TextSetter.*;
+import static org.jrenner.androidglances.Constants.*;
 
 public class MonitorFragment extends Fragment {
     private static MonitorFragment instance;
@@ -152,20 +150,28 @@ public class MonitorFragment extends Fragment {
         return result;
     }
 
-    public void addServerToList(String urltext, String nickName) {
+    /**
+     * Returns server that was added
+     * @param urltext
+     * @param nickName
+     * @param password
+     * @return
+     */
+    public GlancesInstance addServerToList(String urltext, String nickName, String password) {
         URL url = null;
         GlancesInstance newServer = null;
         try {
             url = new URL(urltext);
             Log.v(TAG, "Adding Glances server to list: " + urltext + " - " + nickName);
-            newServer = new GlancesInstance(url, nickName);
+            newServer = new GlancesInstance(url, nickName, password);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
             Toast.makeText(getActivity(), "Invalid URL: " + urltext, Toast.LENGTH_LONG).show();
-            return;
+            return null;
         }
         allGlances.add(newServer);
         redrawActionBar();
+        return newServer;
     }
 
     void redrawActionBar() {
@@ -180,6 +186,9 @@ public class MonitorFragment extends Fragment {
         for (GlancesInstance server : allGlances) {
             if (server.nickName.equals(nickName)) {
                 Log.i(TAG, "Removing server: " + nickName);
+                Activity activity = getActivity();
+                activity.getPreferences(Activity.MODE_PRIVATE).edit().remove(nickName).commit();
+                activity.getSharedPreferences("serverPasswords", Activity.MODE_PRIVATE).edit().remove(nickName).commit();
                 allGlances.remove(server);
                 doNotMonitor();
                 redrawActionBar();
@@ -208,6 +217,10 @@ public class MonitorFragment extends Fragment {
         updateAgeText.setText(connectText);
         connectStartTime = System.currentTimeMillis();
         nameText.setText("");
+    }
+
+    public void setServer(GlancesInstance server) {
+        setServer(server.url.toString(), server.nickName);
     }
 
     public void doNotMonitor() {
@@ -268,10 +281,11 @@ public class MonitorFragment extends Fragment {
             setProcesses(procHeader, processes, monitored.processes);
             setSensors(sensorsHeader, sensors, monitored.sensors);
             setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);
-            Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
+            //Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
             monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
         }
+        handleErrors();
     }
 
     Runnable updateTimer = new Runnable() {
@@ -302,5 +316,26 @@ public class MonitorFragment extends Fragment {
     public void deleteAllServers() {
         doNotMonitor();
         allGlances.clear();
+    }
+
+    public void handleErrors() {
+        UPDATE_ERROR err = monitored.getErrorCode();
+        if (err != null) {
+            String errMsg = null;
+            if (err == UPDATE_ERROR.AUTH_FAILED) {
+                errMsg = "Authentication failed";
+                //Toast.makeText(getActivity(), errMsg, Toast.LENGTH_LONG).show();
+            } else if (err == UPDATE_ERROR.CONN_REFUSED) {
+                errMsg = "Connection refused";
+            } else {
+                errMsg = "Unhandled error type";
+            }
+            updateTimeText.setText(errMsg);
+            monitored.setErrorCode(null);
+        }
+    }
+
+    public GlancesInstance getMonitoredServer() {
+        return monitored;
     }
 }
