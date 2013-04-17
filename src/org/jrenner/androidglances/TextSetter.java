@@ -150,11 +150,13 @@ public class TextSetter {
         return true;
     }
 
-    static Comparator<Process> processCPUComparator = new Comparator<Process>() {
+    static Comparator<Process> processCPUPlusMemoryComparator = new Comparator<Process>() {
         public int compare(Process p1, Process p2) {
-            if (p1.getCpuPercent() == p2.getCpuPercent())
+            double p1score = p1.getCpuPercent() + p1.getMemoryPercent();
+            double p2score = p2.getCpuPercent() + p2.getMemoryPercent();
+            if (p1score == p2score)
                 return 0;
-            return p1.getCpuPercent() > p2.getCpuPercent() ? -1 : 1;
+            return p1score > p2score ? -1 : 1;
         }
     };
 
@@ -163,15 +165,15 @@ public class TextSetter {
             handleNull(tv);
             return false;
         }
-        header.setText("Top 5 Processes by CPU");
+        header.setText("Top 10 Processes by CPU + Memory");
         if (processes.size() == 0) {
             tv.setText("Process data disabled by server");
             return true;
         }
         String procData = "";
-        Collections.sort(processes, processCPUComparator);
+        Collections.sort(processes, processCPUPlusMemoryComparator);
         int count = 0;
-        int numToAdd = 5;
+        int numToAdd = 10;
         for (Process proc : processes) {
             if (count >= numToAdd) {
                 break;
@@ -179,7 +181,8 @@ public class TextSetter {
             if (!"".equals(procData)) {
                 procData += "\n";
             }
-            String thisProc = proc.getName() + " (" + proc.getCpuPercent() + "%) User: " + proc.getUserName();
+            String thisProc = String.format("%s - CPU: %.0f - Mem: %.0f (%s)", proc.getName(), proc.getCpuPercent(),
+                    proc.getMemoryPercent(), proc.getUserName());
             procData += thisProc;
             count++;
         }

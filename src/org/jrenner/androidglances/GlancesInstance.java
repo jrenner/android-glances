@@ -60,7 +60,7 @@ public class GlancesInstance {
             return;
         }
         instanceUpdater = new InstanceUpdater();
-        instanceUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, glances);
+        instanceUpdater.execute(glances);
     }
 
     public boolean isUpdateWaiting() {
@@ -118,6 +118,14 @@ public class GlancesInstance {
                         setErrorCode(UPDATE_ERROR.AUTH_FAILED);
                     } else if (error.contains("Connection refused")) {
                         setErrorCode(UPDATE_ERROR.CONN_REFUSED);
+                    } else if (error.contains("external-parameter")) {
+                        setErrorCode(UPDATE_ERROR.SAX_PARSER_ANDROID_2_X);
+                    } else if (error.contains("challenge is null")) {
+                        setErrorCode(UPDATE_ERROR.AUTH_CHALLENGE_NULL);
+                    } else if (error.contains("Unable to resolve host")) {
+                        setErrorCode(UPDATE_ERROR.BAD_HOSTNAME);
+                    } else {
+                        setErrorCode(UPDATE_ERROR.UNDEFINED);
                     }
                 }
                 float timeTaken = (float) (System.currentTimeMillis() - updateStartTime) / 1000;

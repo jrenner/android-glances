@@ -18,6 +18,9 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +28,7 @@ import java.util.Set;
 public class Main extends SherlockFragmentActivity {
     private static final String TAG = "Glances-Main";
     private MonitorFragment monitorFrag;
+    private SpinnerAdapter serverSpinnerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -48,7 +52,7 @@ public class Main extends SherlockFragmentActivity {
         ActionBar abar = getSupportActionBar();
         abar.setDisplayShowHomeEnabled(false);
         abar.setDisplayShowTitleEnabled(false);
-        SpinnerAdapter adapter = new ArrayAdapter<GlancesInstance>(this, android.R.layout.simple_spinner_dropdown_item,
+        serverSpinnerAdapter = new ArrayAdapter<GlancesInstance>(this, android.R.layout.simple_spinner_dropdown_item,
                 monitorFrag.getAllGlancesServers());
 
         ActionBar.OnNavigationListener navListener = new ActionBar.OnNavigationListener() {
@@ -61,9 +65,19 @@ public class Main extends SherlockFragmentActivity {
             }
         };
 
-        abar.setListNavigationCallbacks(adapter, navListener);
+        abar.setListNavigationCallbacks(serverSpinnerAdapter, navListener);
 
         return true;
+    }
+
+    public void selectServer(String nickName) {
+        List<GlancesInstance> servers = monitorFrag.getAllGlancesServers();
+        for (GlancesInstance server : servers) {
+            if (server.nickName.equals(nickName)) {
+                int index = servers.indexOf(server);
+                getSupportActionBar().setSelectedNavigationItem(index);
+            }
+        }
     }
 
     @Override
@@ -85,6 +99,7 @@ public class Main extends SherlockFragmentActivity {
             count++;
         }
         editor.commit();
+        passEditor.commit();
         Log.i(TAG, "Saved " + count + " servers to Preferences");
     }
 
@@ -100,9 +115,6 @@ public class Main extends SherlockFragmentActivity {
             monitorFrag.addServerToList(url, name, password);
             count++;
         }
-        monitorFrag.addServerToList("http://192.168.173.103:61209", "test pass", "testpass");
-        monitorFrag.addServerToList("http://192.168.173.103:61209", "no pass", null);
-        monitorFrag.addServerToList("http://192.168.173.103:61209", "wrong pass", "AjneoraangO");
         Log.i(TAG, "Loaded " + count + " servers from Preferences");
     }
 
@@ -133,7 +145,7 @@ public class Main extends SherlockFragmentActivity {
     }
 
     void initializeFragments() {
-        FragmentManager fragmentManager = getFragmentManager();
+        FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         monitorFrag = MonitorFragment.getInstance();
         fragmentTransaction.add(R.id.fragment_container, monitorFrag);
@@ -149,12 +161,6 @@ public class Main extends SherlockFragmentActivity {
         Log.w(TAG, "Trying to shutdown");
         monitorFrag.shutdown();
         finish();
-    }
-
-    void removeAllServers() {
-        getPreferences(MODE_PRIVATE).edit().clear().commit();
-
-        monitorFrag.deleteAllServers();
     }
 
     class AddServerDialog extends SherlockDialogFragment {
@@ -199,7 +205,8 @@ public class Main extends SherlockFragmentActivity {
                                         invalidInput, Toast.LENGTH_LONG).show();
                             } else {
                                 String finalURL = smartURL(url, port);
-                                monitorFrag.addServerToList(finalURL, nameEdit.getText().toString(), password);
+                                monitorFrag.addServerToList(finalURL, nickName, password);
+                                selectServer(nickName);
                             }
                         }
                     })
@@ -262,9 +269,8 @@ public class Main extends SherlockFragmentActivity {
                             } else {
                                 String finalURL = smartURL(url, port);
                                 monitorFrag.removeServerFromList(originalName);
-                                GlancesInstance newServer = monitorFrag.addServerToList(finalURL,
-                                        nameEdit.getText().toString(), password);
-                                monitorFrag.setServer(newServer);
+                                monitorFrag.addServerToList(finalURL, nickName, password);
+                                selectServer(nickName);
 
                             }
                         }

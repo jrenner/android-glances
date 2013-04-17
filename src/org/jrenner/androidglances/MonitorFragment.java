@@ -1,7 +1,7 @@
 package org.jrenner.androidglances;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.actionbarsherlock.app.SherlockActivity;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -176,7 +177,7 @@ public class MonitorFragment extends Fragment {
 
     void redrawActionBar() {
         //Log.v(TAG, "Menu item changed - invalidating action bar to cause redraw");
-        getActivity().invalidateOptionsMenu();
+        getActivity().supportInvalidateOptionsMenu();
     }
 
     /**
@@ -323,12 +324,18 @@ public class MonitorFragment extends Fragment {
         if (err != null) {
             String errMsg = null;
             if (err == UPDATE_ERROR.AUTH_FAILED) {
-                errMsg = "Authentication failed";
+                errMsg = "Server does not require password";
                 //Toast.makeText(getActivity(), errMsg, Toast.LENGTH_LONG).show();
             } else if (err == UPDATE_ERROR.CONN_REFUSED) {
                 errMsg = "Connection refused";
+            } else if (err == UPDATE_ERROR.SAX_PARSER_ANDROID_2_X) {
+                errMsg = "Android version too low, cannot parse xml";
+            } else if (err == UPDATE_ERROR.AUTH_CHALLENGE_NULL) {
+                errMsg = "Wrong password";
+            } else if (err == UPDATE_ERROR.BAD_HOSTNAME) {
+                errMsg = "Unable to resolve host - check server url";
             } else {
-                errMsg = "Unhandled error type";
+                errMsg = "Undefined error";
             }
             updateTimeText.setText(errMsg);
             monitored.setErrorCode(null);
