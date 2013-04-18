@@ -127,19 +127,19 @@ public class Main extends SherlockFragmentActivity {
                 break;
             case R.id.action_add_server:
                 AddServerDialog addDialog = new AddServerDialog();
-                addDialog.show(getSupportFragmentManager(), "Add a server");
+                addDialog.show(getSupportFragmentManager(), getString(R.string.add_server));
                 break;
             case R.id.action_edit_server:
                 if (monitorFrag.getMonitoredServer() != null) {
                     EditServerDialog editDialog = new EditServerDialog();
-                    editDialog.show(getSupportFragmentManager(), "Edit server details");
+                    editDialog.show(getSupportFragmentManager(), getString(R.string.edit_server));
                 } else {
                     Toast.makeText(this, "No server selected", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.action_remove_server:
                 RemoveServerDialog removeDialog = new RemoveServerDialog();
-                removeDialog.show(getSupportFragmentManager(), "Remove a server");
+                removeDialog.show(getSupportFragmentManager(), getString(R.string.remove_server));
                 break;
             default:
                 Toast.makeText(this, "Unhandled action item", Toast.LENGTH_LONG).show();
@@ -179,8 +179,8 @@ public class Main extends SherlockFragmentActivity {
             final EditText passwordEdit = (EditText) dialogView.findViewById(R.id.server_password_edittext);
             final EditText nameEdit = (EditText) dialogView.findViewById(R.id.server_name_edittext);
             builder.setView(dialogView);
-            builder.setMessage("Add a server")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setMessage(getString(R.string.add_server))
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Activity act = getSherlockActivity();
                             String url = urlEdit.getText().toString();
@@ -215,7 +215,7 @@ public class Main extends SherlockFragmentActivity {
                             }
                         }
                     })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //Toast.makeText(getApplicationContext(), "Canceled add server", Toast.LENGTH_LONG).show();
                         }
@@ -242,8 +242,8 @@ public class Main extends SherlockFragmentActivity {
             final EditText nameEdit = (EditText) dialogView.findViewById(R.id.server_name_edittext);
             nameEdit.setText(server.nickName);
             builder.setView(dialogView);
-            builder.setMessage("Add a server")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            builder.setMessage(getString(R.string.edit_server))
+                    .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             Activity act = getSherlockActivity();
                             String url = urlEdit.getText().toString();
@@ -280,7 +280,7 @@ public class Main extends SherlockFragmentActivity {
                             }
                         }
                     })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             //Toast.makeText(getApplicationContext(), "Canceled add server", Toast.LENGTH_LONG).show();
                         }
@@ -294,7 +294,7 @@ public class Main extends SherlockFragmentActivity {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
             final String[] serverNames = monitorFrag.getServerNames();
-            builder.setTitle("Remove a server")
+            builder.setTitle(getString(R.string.remove_server))
             .setItems(serverNames, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int selection) {
                     boolean removed = monitorFrag.removeServerFromList(serverNames[selection]);
