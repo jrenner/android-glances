@@ -181,7 +181,7 @@ public class TextSetter {
             if (!"".equals(procData)) {
                 procData += "\n";
             }
-            String thisProc = String.format("%s - CPU: %.0f - Mem: %.0f (%s)", proc.getName(), proc.getCpuPercent(),
+            String thisProc = String.format("%s CPU: %.0f%% - Mem: %.0f%% (%s)", proc.getName(), proc.getCpuPercent(),
                     proc.getMemoryPercent(), proc.getUserName());
             procData += thisProc;
             count++;
