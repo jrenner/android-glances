@@ -72,7 +72,6 @@ public class Main extends SherlockFragmentActivity {
 
         return true;
     }
-
     public void loadUserSettings() {
         SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
         UserSettings.setServerUpdateInterval(userSettings.getLong("serverUpdateInterval", 3000));
