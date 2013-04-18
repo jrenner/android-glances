@@ -24,6 +24,7 @@
     <string name="file_systems">File Systems</string>
     <string name="disk_io">Disk IO</string>
     <string name="cpu_cores">CPU (%d cores)</string>
+    <string name="no_data">No data</string>
     
     <string name="add_server">Add a server</string>
     <string name="edit_server">Edit server details</string>

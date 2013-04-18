@@ -1,32 +1,31 @@
 package org.jrenner.androidglances;
 
+import android.app.Activity;
+import android.widget.TextView;
+import org.jrenner.glances.*;
+import org.jrenner.glances.Process;
+
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.jrenner.glances.Cpu;
-import org.jrenner.glances.DiskIO;
-import org.jrenner.glances.FileSystem;
-import org.jrenner.glances.Glances;
-import org.jrenner.glances.HardDriveTemp;
-import org.jrenner.glances.Load;
-import org.jrenner.glances.Memory;
-import org.jrenner.glances.MemorySwap;
-import org.jrenner.glances.NetworkInterface;
-import org.jrenner.glances.Process;
-import org.jrenner.glances.Sensor;
-import org.jrenner.glances.SystemInfo;
 
-import android.content.res.Resources;
-import android.widget.TextView;
-
+/**
+ * activity must be set manually, probably in main activity's onCreate(), in order to get string resources
+ * TODO: This shouldn't be necessary
+ */
 public class TextSetter {
-    private static final String NO_DATA = "No data";
+    private static Activity activity;  // this must be set manually by outside Activity
+
+    public static void setActivity(Activity act) {
+        activity = act;
+    }
 
     private static void handleNull(TextView tv) {
-        tv.setText(NO_DATA);
+        // The data field will display "No data" because the data structure passed was null
+        tv.setText(activity.getString(R.string.no_data));
     }
 
     public static boolean setNow(TextView tv, Date now) {
@@ -52,10 +51,10 @@ public class TextSetter {
 
     public static boolean setCPUHeader(TextView tv, Integer cores) {
         if (cores == null) {
-            tv.setText(Resources.getSystem().getString(R.string.cpu));
+            tv.setText(activity.getString(R.string.cpu));
             return false;
         }
-        tv.setText(Resources.getSystem().getString(R.string.cpu_cores, cores));
+        tv.setText(activity.getString(R.string.cpu_cores, cores));
         return true;
     }
 
@@ -80,7 +79,7 @@ public class TextSetter {
     }
 
     public static boolean setMemory(TextView header, TextView tv, Memory mem) {
-        header.setText(Resources.getSystem().getString(R.string.memory));
+        header.setText(activity.getString(R.string.memory));
         if (mem == null) {
             handleNull(tv);
             return false;
@@ -92,7 +91,7 @@ public class TextSetter {
     }
 
     public static boolean setSwap(TextView header, TextView tv, MemorySwap swap) {
-        header.setText(Resources.getSystem().getString(R.string.swap));
+        header.setText(activity.getString(R.string.swap));
         if (swap == null) {
             handleNull(tv);
             return false;
@@ -104,7 +103,7 @@ public class TextSetter {
     }
 
     public static boolean setNetworks(TextView header, TextView tv, List<NetworkInterface> nets) {
-        header.setText(Resources.getSystem().getString(R.string.network_interfaces));
+        header.setText(activity.getString(R.string.network_interfaces));
         if (nets == null) {
             handleNull(tv);
             return false;
@@ -127,7 +126,7 @@ public class TextSetter {
     }
 
     public static boolean setFileSystems(TextView header, TextView tv, List<FileSystem> fileSystems) {
-        header.setText(Resources.getSystem().getString(R.string.file_systems));
+        header.setText(activity.getString(R.string.file_systems));
         if (fileSystems == null) {
             handleNull(tv);
             return false;
@@ -145,7 +144,7 @@ public class TextSetter {
     }
 
     public static boolean setDiskIO(TextView header, TextView tv, List<DiskIO> disks) {
-        header.setText(Resources.getSystem().getString(R.string.disk_io));
+        header.setText(activity.getString(R.string.disk_io));
         if (disks == null) {
             handleNull(tv);
             return false;
@@ -203,7 +202,7 @@ public class TextSetter {
     }
 
     public static boolean setSensors(TextView header, TextView tv, List<Sensor> sensors) {
-        header.setText(Resources.getSystem().getString(R.string.sensors));
+        header.setText(activity.getString(R.string.sensors));
         if (sensors == null) {
             handleNull(tv);
             return false;
@@ -220,7 +219,7 @@ public class TextSetter {
     }
 
     public static boolean setHDDTemp(TextView header, TextView tv, List<HardDriveTemp> hddtemps) {
-        header.setText(Resources.getSystem().getString(R.string.hard_drive_temperature));
+        header.setText(activity.getString(R.string.hard_drive_temperature));
         if (hddtemps == null) {
             handleNull(tv);
             return false;

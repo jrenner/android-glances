@@ -16,7 +16,7 @@ import static org.jrenner.androidglances.Constants.*;
 
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
-    private static final long updateInterval = 3000; // milliseconds
+    private static long updateInterval = UserSettings.getServerUpdateInterval(); // milliseconds
     public URL url;
     public String nickName;
     protected String password;
@@ -159,5 +159,9 @@ public class GlancesInstance {
     @Override
     public String toString() {
         return this.nickName;
+    }
+
+    public void setUpdateInterval(long interval) {
+        updateInterval = interval;
     }
 }

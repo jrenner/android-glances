@@ -1,9 +1,5 @@
 package org.jrenner.androidglances;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -26,6 +22,10 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class Main extends SherlockFragmentActivity {
     private static final String TAG = "Glances-Main";
     private MonitorFragment monitorFrag;
@@ -42,8 +42,10 @@ public class Main extends SherlockFragmentActivity {
         }
         ActionBar abar = getSupportActionBar();
         abar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
-
+        TextSetter.setActivity(this);
+        loadUserSettings();
         loadServers();
+
     }
 
     @Override
@@ -69,6 +71,26 @@ public class Main extends SherlockFragmentActivity {
         abar.setListNavigationCallbacks(serverSpinnerAdapter, navListener);
 
         return true;
+    }
+
+    public void loadUserSettings() {
+        SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
+        UserSettings.setServerUpdateInterval(userSettings.getLong("serverUpdateInterval", 3000));
+    }
+
+    public void saveUserSettings() {
+        SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
+        SharedPreferences.Editor editor = userSettings.edit();
+        editor.putLong("serverUpdateInterval", UserSettings.getServerUpdateInterval());
+        editor.commit();
+        // after saving, make sure we update all currently running objects with the new settings
+        applyUserSettings();
+    }
+
+    public void applyUserSettings() {
+        for (GlancesInstance server : monitorFrag.getAllGlancesServers()) {
+            server.setUpdateInterval(UserSettings.getServerUpdateInterval());
+        }
     }
 
     public void selectServer(String nickName) {
