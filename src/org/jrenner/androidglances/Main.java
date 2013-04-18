@@ -129,8 +129,12 @@ public class Main extends SherlockFragmentActivity {
                 addDialog.show(getSupportFragmentManager(), "Add a server");
                 break;
             case R.id.action_edit_server:
-                EditServerDialog editDialog = new EditServerDialog();
-                editDialog.show(getSupportFragmentManager(), "Edit server details");
+                if (monitorFrag.getMonitoredServer() != null) {
+                    EditServerDialog editDialog = new EditServerDialog();
+                    editDialog.show(getSupportFragmentManager(), "Edit server details");
+                } else {
+                    Toast.makeText(this, "No server selected", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.action_remove_server:
                 RemoveServerDialog removeDialog = new RemoveServerDialog();
