@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-
     <item android:id="@+id/action_add_server"
           android:showAsAction="always"
-          android:title="Add" />
+          android:title="@string/action_add" />
     <item android:id="@+id/action_remove_server"
           android:showAsAction="always"
-          android:title="Del" />
+          android:title="@string/action_delete" />
     <item android:id="@+id/action_edit_server"
           android:showAsAction="always"
-          android:title="Edit" />
+          android:title="@string/action_edit" />
     <item android:id="@+id/action_quit"
           android:showAsAction="always"
-          android:title="Quit" />
-
+          android:title="@string/action_quit" />
 </menu>

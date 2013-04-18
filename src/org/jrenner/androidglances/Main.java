@@ -1,9 +1,17 @@
 package org.jrenner.androidglances;
 
-import android.app.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,13 +25,6 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
-
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class Main extends SherlockFragmentActivity {
     private static final String TAG = "Glances-Main";
