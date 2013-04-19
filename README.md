@@ -5,11 +5,11 @@ The primary use is to monitor a machine over a network.</b>
 ![Alt text](http://github.com/jrenner/android-glances/raw/master/img/glances_screenshot.png "screenshot")
 
 <h3>Dependencies</h3>
-- java-glances<br>
+- [java-glances](http://github.com/jrenner/java-glances)<br>
     * (and its dependencies):
 	* Google gson
 	* Apache XML-RPC
-- SLF4J (should use android version)
+	* you can get a jar that has java-glances and its dependencies [here](https://github.com/jrenner/java-glances/tree/master/bin)
 - ActionBarSherlock
 
 <h3>How to use</h3>
