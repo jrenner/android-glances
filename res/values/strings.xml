@@ -25,6 +25,9 @@
     <string name="disk_io">Disk IO</string>
     <string name="cpu_cores">CPU (%d cores)</string>
     <string name="no_data">No data</string>
+    <string name="used">Used: %1$s / %2$s</string>
+    <string name="available">%1$s - %2$s / %3$s available</string>
+    <string name="read_write">%1$s: Read %2$s/s, Write %3$s/s</string>
     
     <string name="add_server">Add a server</string>
     <string name="edit_server">Edit server details</string>

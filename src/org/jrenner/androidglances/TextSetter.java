@@ -86,7 +86,7 @@ public class TextSetter {
         }
         String memTotal = Glances.autoUnit(mem.getTotal());
         String memUsed = Glances.autoUnit(mem.getUsed());
-        tv.setText(String.format("Used %s / %s", memUsed, memTotal));
+        tv.setText(activity.getString(R.string.used, memUsed, memTotal));
         return true;
     }
 
@@ -98,7 +98,7 @@ public class TextSetter {
         }
         String swapTotal = Glances.autoUnit(swap.getTotal());
         String swapUsed = Glances.autoUnit(swap.getUsed());
-        tv.setText(String.format("Used: %s / %s", swapUsed, swapTotal));
+        tv.setText(activity.getString(R.string.used, swapUsed, swapTotal));
         return true;
     }
 
@@ -136,7 +136,7 @@ public class TextSetter {
             if (!"".equals(fsData)) {
                 fsData += "\n";
             }
-            fsData += String.format("%s - %s / %s available", fs.getDeviceName(), Glances.autoUnit(fs.getAvailable()),
+            fsData += activity.getString(R.string.available, fs.getDeviceName(), Glances.autoUnit(fs.getAvailable()),
                     Glances.autoUnit(fs.getSize()));
         }
         tv.setText(fsData);
@@ -154,7 +154,7 @@ public class TextSetter {
             if (!"".equals(diskData)) {
                 diskData += "\n";
             }
-            diskData += String.format("%s: Read %s/s, Write %s/s", disk.getDiskName(),
+            diskData += activity.getString(R.string.read_write, disk.getDiskName(),
                     Glances.autoUnit(disk.getBytesReadPerSec()), Glances.autoUnit(disk.getBytesWrittenPerSec()));
         }
         tv.setText(diskData);
