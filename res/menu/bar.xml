@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/action_add_server"
-          android:showAsAction="always"
-          android:title="@string/action_add" />
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/action_add"
+          android:icon="@drawable/ic_action_add" />
     <item android:id="@+id/action_remove_server"
-          android:showAsAction="always"
-          android:title="@string/action_delete" />
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/action_delete"
+          android:icon="@drawable/ic_action_remove" />
     <item android:id="@+id/action_edit_server"
-          android:showAsAction="always"
-          android:title="@string/action_edit" />
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/action_edit" 
+          android:icon="@drawable/ic_action_edit"/>
     <item android:id="@+id/action_quit"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
           android:title="@string/action_quit" />
 </menu>
