@@ -2,7 +2,7 @@ package org.jrenner.androidglances;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import org.apache.xmlrpc.XmlRpcException;
+import de.timroes.axmlrpc.XMLRPCException;
 import org.jrenner.glances.*;
 import org.jrenner.glances.Process;
 
@@ -12,7 +12,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import static org.jrenner.androidglances.Constants.*;
+import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
 
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
@@ -111,7 +111,7 @@ public class GlancesInstance {
                     cores = current.getCore();
                 } catch (ParseException e) {
                     Log.w(TAG, "GetNow() - " + e.toString());
-                } catch (XmlRpcException e) {
+                } catch (XMLRPCException e) {
                     String error = e.toString();
                     Log.e(TAG, error);
                     if (error.contains("Authentication failed")) {

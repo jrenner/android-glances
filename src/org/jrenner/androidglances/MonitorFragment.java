@@ -1,16 +1,15 @@
 package org.jrenner.androidglances;
 
 import android.app.Activity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.actionbarsherlock.app.SherlockActivity;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -18,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
 import static org.jrenner.androidglances.TextSetter.*;
-import static org.jrenner.androidglances.Constants.*;
 
 public class MonitorFragment extends Fragment {
     private static MonitorFragment instance;
@@ -327,7 +326,7 @@ public class MonitorFragment extends Fragment {
                 errMsg = "Server does not require password";
                 //Toast.makeText(getActivity(), errMsg, Toast.LENGTH_LONG).show();
             } else if (err == UPDATE_ERROR.CONN_REFUSED) {
-                errMsg = "Connection refused";
+                errMsg = "failed to connect";
             } else if (err == UPDATE_ERROR.SAX_PARSER_ANDROID_2_X) {
                 errMsg = "Android version too low, cannot parse xml";
             } else if (err == UPDATE_ERROR.AUTH_CHALLENGE_NULL) {

@@ -1,3 +1,9 @@
 .settings
 bin
 gen
+libs
+
+#IntelliJ IDEA
+*.iml
+.idea
+out
