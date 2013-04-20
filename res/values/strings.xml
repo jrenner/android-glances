@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Android Glances</string>
+    <string name="app_version">0.4.0</string>
     
     <string name="ip_hostname">IP or Hostname</string>
     <string name="port">Port</string>
@@ -13,6 +14,7 @@
     <string name="action_add">Add</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
+    <string name="action_about">About</string>
     <string name="action_quit">Quit</string>
     
     <string name="hard_drive_temperature">Hard Drive Temperatures</string>
@@ -38,4 +40,8 @@
 
     <string name="no_server_selected">No server selected</string>
     <string name="connect_to_server">Trying to connect to server</string>
+    <string name="about_author">author: Jon Renner</string>
+    <string name="about_email">rennerjc@gmail.com</string>
+    <string name="about_url">Report a bug, or request a feature:\nhttps://github.com/jrenner/android-glances/issues/new</string>
+    <string name="about_glances">To set up a Glances server, visit:\nhttp://nicolargo.github.io/glances/</string>
 </resources>

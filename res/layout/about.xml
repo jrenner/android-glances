@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_margin="12dp">
+    <TextView
+        style="@style/AboutDialogText"
+        android:gravity="center"
+        android:id="@+id/about_title"
+        android:text="@string/app_name"/>
+    <TextView
+        style="@style/AboutDialogText"
+        android:id="@+id/about_version"
+        android:text="@string/app_version" />
+    <TextView
+        style="@style/AboutDialogTextSmall"
+        android:id="@+id/about_author"
+        android:text="@string/about_author"/>
+    <TextView
+            style="@style/AboutDialogTextSmall"
+            android:id="@+id/about_email"
+            android:text="@string/about_email"/>
+    <TextView
+            style="@style/AboutDialogTextSmall"
+            android:id="@+id/about_url"
+            android:text="@string/about_url"/>
+    <TextView
+            style="@style/AboutDialogTextSmall"
+            android:id="@+id/about_glances"
+            android:text="@string/about_glances"/>
+
+</LinearLayout>

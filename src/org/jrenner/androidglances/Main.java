@@ -9,13 +9,11 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.SpinnerAdapter;
-import android.widget.Toast;
+import android.widget.*;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -31,16 +29,9 @@ public class Main extends SherlockFragmentActivity {
     private static final String TAG = "Glances-Main";
     private MonitorFragment monitorFrag;
     private SpinnerAdapter serverSpinnerAdapter;
-    private static int running = 0;
-
-    private void debugSoManyRunningThings() {
-        running += 1;
-        Log.i(TAG, "Running activities: " + running);
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        debugSoManyRunningThings();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         if (monitorFrag == null) {
@@ -54,7 +45,6 @@ public class Main extends SherlockFragmentActivity {
         loadUserSettings();
         loadServers();
         Log.i(TAG, "onCreate");
-
     }
 
     @Override
@@ -78,25 +68,6 @@ public class Main extends SherlockFragmentActivity {
         }
         monitorFrag.startUpdates();
 
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "onDestroy");
-        running -= 1;
-    }
-
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        String orientText = null;
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            orientText = "portrait";
-        } else {
-            orientText = "landscape";
-        }
-        Log.d(TAG, "onConfigurationChanged - " + orientText);
-        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -125,6 +96,7 @@ public class Main extends SherlockFragmentActivity {
 
         return true;
     }
+
     public void loadUserSettings() {
         SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
         UserSettings.setServerUpdateInterval(userSettings.getLong("serverUpdateInterval", 3000));
@@ -211,11 +183,14 @@ public class Main extends SherlockFragmentActivity {
                 RemoveServerDialog removeDialog = new RemoveServerDialog();
                 removeDialog.show(getSupportFragmentManager(), getString(R.string.remove_server));
                 break;
+            case R.id.action_about:
+                AboutDialog aboutDialog = new AboutDialog();
+                aboutDialog.show(getSupportFragmentManager(), getString(R.string.action_about));
+                break;
             default:
                 Toast.makeText(this, "Unhandled action item", Toast.LENGTH_LONG).show();
                 break;
         }
-
         return true;
     }
 
@@ -225,6 +200,7 @@ public class Main extends SherlockFragmentActivity {
         if (monitorFrag == null) {
             monitorFrag = new MonitorFragment();
         }
+        monitorFrag.resetUpdateTime();
         fragmentTransaction.replace(R.id.fragment_container, monitorFrag);
         fragmentTransaction.commit();
         fragmentManager.executePendingTransactions();
@@ -236,6 +212,27 @@ public class Main extends SherlockFragmentActivity {
         Log.w(TAG, "Trying to shutdown");
         monitorFrag.shutdown();
         finish();
+    }
+
+    public static class AboutDialog extends SherlockDialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.about, null);
+            TextView emailText = (TextView) dialogView.findViewById(R.id.about_email);
+            TextView urlText = (TextView) dialogView.findViewById(R.id.about_url);
+            TextView glancesText = (TextView) dialogView.findViewById(R.id.about_glances);
+            Linkify.addLinks(emailText, Linkify.EMAIL_ADDRESSES);
+            Linkify.addLinks(urlText, Linkify.WEB_URLS);
+            Linkify.addLinks(glancesText, Linkify.WEB_URLS);
+            builder.setView(dialogView);
+            return builder.create();
+        }
+
+        public AboutDialog() {
+            // don't delete this, it keeps the dialog alive on rotation!
+        }
     }
 
     class AddServerDialog extends SherlockDialogFragment {

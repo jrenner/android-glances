@@ -30,4 +30,16 @@
         <item name="android:layout_marginRight">12dp</item>
         <item name="android:inputType">text</item>
     </style>
+    <style name="AboutDialogText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textColor">#AA8</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginRight">12dp</item>
+        <item name="android:layout_marginBottom">12dp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="AboutDialogTextSmall" parent="@style/AboutDialogText">
+        <item name="android:textSize">14sp</item>
+    </style>
 </resources>

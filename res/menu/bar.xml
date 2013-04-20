@@ -12,6 +12,9 @@
           android:showAsAction="ifRoom|withText"
           android:title="@string/action_edit" 
           android:icon="@drawable/ic_action_edit"/>
+    <item android:id="@+id/action_about"
+          android:showAsAction="ifRoom|withText"
+          android:title="@string/action_about" />
     <item android:id="@+id/action_quit"
           android:showAsAction="ifRoom"
           android:title="@string/action_quit" />

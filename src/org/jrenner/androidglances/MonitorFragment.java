@@ -63,22 +63,14 @@ public class MonitorFragment extends Fragment {
         updateHandler = new Handler();
         Log.d(TAG, "monitor fragment created");
         allGlances = new ArrayList<GlancesInstance>();
-        if (onSavedInstance != null && monitored != null) {
-            long retrievedTime = onSavedInstance.getLong("monitorStartTime", 0);
-            if (retrievedTime != 0) {
-                monitored.monitorStartTime = retrievedTime;
-            }
-        }
-
-        startUpdates();
+        setRetainInstance(true);
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState)
-    {
-        savedInstanceState.putLong("monitorStartTime", monitored.monitorStartTime);
-        Log.v(TAG, "savedInstanceState");
-        super.onSaveInstanceState(savedInstanceState);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        lastUpdateTime = 0;
+        connectStartTime = 0;
     }
 
     @Override
@@ -116,6 +108,10 @@ public class MonitorFragment extends Fragment {
         allTexts = new TextView[]{updateTimeText, systemText, cpuUsage, cpuLoad, memory, swap, nets, diskIO, fileSystems,
                    hddTemp, sensors, processes};
         return view;
+    }
+
+    public void resetUpdateTime() {
+        lastUpdateTime = 0;
     }
 
     public void clearTextValues() {
@@ -222,7 +218,7 @@ public class MonitorFragment extends Fragment {
         clearTextValues();
         monitored = selection;
         serverAddress.setText(monitored.url.getHost() + " : " + monitored.url.getPort());
-        updateAgeText.setText(connectText);
+        updateAgeText.setText(getString(R.string.connect_to_server));
         connectStartTime = System.currentTimeMillis();
         nameText.setText("");
     }
@@ -234,6 +230,7 @@ public class MonitorFragment extends Fragment {
     public void doNotMonitor() {
         clearHeaderValues();
         clearTextValues();
+        lastUpdateTime = 0;
         serverAddress.setText("No server selected");
         updateAgeText.setText("");
         monitored = null;
@@ -253,7 +250,7 @@ public class MonitorFragment extends Fragment {
                 updateAgeText.setText(Tools.convertToHumanTime(updateAge) + " old, monitored for " + Tools.convertToHumanTime(monitorTime));
             } else {
                 long waitTime = System.currentTimeMillis() - connectStartTime;
-                updateAgeText.setText(R.string.connect_to_server + " " + Tools.convertToHumanTime(waitTime));
+                updateAgeText.setText(getString(R.string.connect_to_server) + " " + Tools.convertToHumanTime(waitTime));
             }
         } else {
             nameText.setText(monitored.nickName);
