@@ -13,6 +13,7 @@
     <string name="action_add">Ajouter</string>
     <string name="action_edit">Editer</string>
     <string name="action_delete">Supprimer</string>
+    <string name="action_about">A propos</string>
     <string name="action_quit">Quitter</string>
     
     <string name="hard_drive_temperature">Températures Disques</string>
@@ -35,4 +36,11 @@
     
     <string name="ok">Ok</string>
     <string name="cancel">Annuler</string>
+
+    <string name="no_server_selected">Pas de serveur séléctionné</string>
+    <string name="connect_to_server">Tentative de connexion au serveur</string>
+    <string name="about_author">auteur: Jon Renner</string>
+    <string name="about_email">rennerjc@gmail.com</string>
+    <string name="about_url">Rapporter un bug, ou demander une fonctionnalité:\nhttps://github.com/jrenner/android-glances/issues/new</string>
+    <string name="about_glances">Pour installer le serveur Glances:\nhttp://nicolargo.github.io/glances/</string>
 </resources>
