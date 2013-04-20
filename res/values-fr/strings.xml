@@ -24,6 +24,10 @@
     <string name="file_systems">Système de fichiers</string>
     <string name="disk_io">Disque Entrées/Sorties</string>
     <string name="cpu_cores">CPU (%d coeurs)</string>
+    <string name="no_data">Pas de données</string>
+    <string name="used">Utilisées: %1$s / %2$s</string>
+    <string name="available">%1$s - %2$s / %3$s disponible</string>
+    <string name="read_write">%1$s: Lecture %2$s/s, Ecriture %3$s/s</string>
     
     <string name="add_server">Ajouter un serveur</string>
     <string name="edit_server">Editer un serveur</string>
