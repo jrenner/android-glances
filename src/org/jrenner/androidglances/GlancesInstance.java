@@ -55,12 +55,21 @@ public class GlancesInstance {
         Log.i(TAG, "Starting monitoring new server: " + nickName + " - " + url.toString());
     }
 
+    public void setTimeout(int seconds) {
+        glances.setTimeout(seconds);
+    }
+
     public void update() {
         if (instanceUpdater != null && instanceUpdater.getStatus() != AsyncTask.Status.FINISHED) {
             return;
         }
         instanceUpdater = new InstanceUpdater();
+        // executes async tasks in serial
+        // in the future, if we want to update concurrently, we need to use the commented out version
+        // Concurrency is disabled because of many issues: battery use, unreliable updating due to network clogging, etc.
+        // A round robin approach is probably best anyways
         instanceUpdater.execute(glances);
+        //instanceUpdater.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, glances);
     }
 
     public boolean isUpdateWaiting() {
@@ -138,10 +147,11 @@ public class GlancesInstance {
                 if (now != null) {
                     Log.v(TAG, String.format("Fetched update for %s - took %.1fs", nickName, timeTaken));
                     setUpdateWaiting(true);
-                } else {
-                    String msg = String.format("Only retrieved %d / %d data fields from server after %.1fs",
-                            fieldsRetrieved, allFields.length, timeTaken);
-                    Log.e(TAG, msg);
+                }
+                int numFailed = allFields.length - fieldsRetrieved;
+                if (numFailed > 0) {
+                    Log.v(TAG,String.format("Failed to retrieve %d fields (%.1fs)",
+                        numFailed , timeTaken));
                 }
             }
             try {

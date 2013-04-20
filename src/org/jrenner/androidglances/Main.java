@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,9 +31,16 @@ public class Main extends SherlockFragmentActivity {
     private static final String TAG = "Glances-Main";
     private MonitorFragment monitorFrag;
     private SpinnerAdapter serverSpinnerAdapter;
+    private static int running = 0;
+
+    private void debugSoManyRunningThings() {
+        running += 1;
+        Log.i(TAG, "Running activities: " + running);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        debugSoManyRunningThings();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         if (monitorFrag == null) {
@@ -45,7 +53,50 @@ public class Main extends SherlockFragmentActivity {
         TextSetter.setActivity(this);
         loadUserSettings();
         loadServers();
+        Log.i(TAG, "onCreate");
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveServers();
+        monitorFrag.stopUpdates();
+        if (monitorFrag.getMonitoredServer() != null) {
+            getSharedPreferences("system_data", MODE_PRIVATE).edit().putString("last_selected_server",
+                monitorFrag.getMonitoredServer().nickName).commit();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        String serverNick = getSharedPreferences("system_data", MODE_PRIVATE).getString("last_selected_server", "");
+        GlancesInstance server = monitorFrag.getServerByName(serverNick);
+        if (server != null) {
+            getSupportActionBar().setSelectedNavigationItem(monitorFrag.getAllGlancesServers().indexOf(server));
+        }
+        monitorFrag.startUpdates();
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.i(TAG, "onDestroy");
+        running -= 1;
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        String orientText = null;
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            orientText = "portrait";
+        } else {
+            orientText = "landscape";
+        }
+        Log.d(TAG, "onConfigurationChanged - " + orientText);
+        super.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -62,8 +113,10 @@ public class Main extends SherlockFragmentActivity {
             @Override
             public boolean onNavigationItemSelected(int itemPosition, long itemId) {
                 List<GlancesInstance> allGlances = monitorFrag.getAllGlancesServers();
-                GlancesInstance server = allGlances.get(itemPosition);
-                monitorFrag.setServer(server.url.toString(), server.nickName);
+                if (allGlances.size() > 0) {
+                    GlancesInstance server = allGlances.get(itemPosition);
+                    monitorFrag.setServer(server.url.toString(), server.nickName);
+                }
                 return true;
             }
         };
@@ -102,14 +155,9 @@ public class Main extends SherlockFragmentActivity {
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        saveServers();
-    }
-
     void saveServers() {
         // we save the server url + name in default prefs
+        // and save server url + password in serverPasswords
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         SharedPreferences serverPasswords = getSharedPreferences("serverPasswords", MODE_PRIVATE);
@@ -126,6 +174,7 @@ public class Main extends SherlockFragmentActivity {
     }
 
     void loadServers() {
+        monitorFrag.removeAllServers();
         SharedPreferences prefs = getPreferences(MODE_PRIVATE);
         SharedPreferences serverPasswords = getSharedPreferences("serverPasswords", MODE_PRIVATE);
         Map<String, ?> nameUrlMap = prefs.getAll();
@@ -173,12 +222,12 @@ public class Main extends SherlockFragmentActivity {
     void initializeFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        monitorFrag = MonitorFragment.getInstance();
-        fragmentTransaction.add(R.id.fragment_container, monitorFrag);
+        if (monitorFrag == null) {
+            monitorFrag = new MonitorFragment();
+        }
+        fragmentTransaction.replace(R.id.fragment_container, monitorFrag);
         fragmentTransaction.commit();
         fragmentManager.executePendingTransactions();
-        if (monitorFrag == null)
-            Log.e(TAG, "monitorFrag is null after trying to init");
         Log.d(TAG, "Finished init of fragment");
     }
 

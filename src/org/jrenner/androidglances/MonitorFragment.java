@@ -21,7 +21,6 @@ import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
 import static org.jrenner.androidglances.TextSetter.*;
 
 public class MonitorFragment extends Fragment {
-    private static MonitorFragment instance;
     private static final String TAG = "Glances-MonitorFrag";
     private GlancesInstance monitored;
     private List<GlancesInstance> allGlances;
@@ -55,33 +54,31 @@ public class MonitorFragment extends Fragment {
 
     private TextView[] allHeaders;
     private TextView[] allTexts;
-    private Toast startUpdatesToast;
-    private Toast stopUpdatesToast;
     private long lastUpdateTime;
     private long connectStartTime; // time of trying to get first update from a server after start of monitoring
-    private static final String connectText = "Trying to connect to server";
-
-    private MonitorFragment() {
-
-    }
-
-    public static MonitorFragment getInstance() {
-        if (instance == null) {
-            instance = new MonitorFragment();
-        }
-        return instance;
-    }
 
     @Override
     public void onCreate(Bundle onSavedInstance) {
         super.onCreate(onSavedInstance);
         updateHandler = new Handler();
         Log.d(TAG, "monitor fragment created");
-        startUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Started updates", Toast.LENGTH_SHORT);
-        stopUpdatesToast = Toast.makeText(getActivity().getApplicationContext(), "Stopped updates", Toast.LENGTH_SHORT);
         allGlances = new ArrayList<GlancesInstance>();
+        if (onSavedInstance != null && monitored != null) {
+            long retrievedTime = onSavedInstance.getLong("monitorStartTime", 0);
+            if (retrievedTime != 0) {
+                monitored.monitorStartTime = retrievedTime;
+            }
+        }
 
         startUpdates();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState)
+    {
+        savedInstanceState.putLong("monitorStartTime", monitored.monitorStartTime);
+        Log.v(TAG, "savedInstanceState");
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -169,6 +166,7 @@ public class MonitorFragment extends Fragment {
             Toast.makeText(getActivity(), "Invalid URL: " + urltext, Toast.LENGTH_LONG).show();
             return null;
         }
+        newServer.setTimeout(15); // timeout after n seconds
         allGlances.add(newServer);
         redrawActionBar();
         return newServer;
@@ -183,6 +181,7 @@ public class MonitorFragment extends Fragment {
      * return true if removed
      */
     public boolean removeServerFromList(String nickName) {
+        //TODO refactor this with getServerByName method
         for (GlancesInstance server : allGlances) {
             if (server.nickName.equals(nickName)) {
                 Log.i(TAG, "Removing server: " + nickName);
@@ -196,6 +195,15 @@ public class MonitorFragment extends Fragment {
             }
         }
         return false;
+    }
+
+    public GlancesInstance getServerByName(String name) {
+        for (GlancesInstance server : allGlances) {
+            if (server.nickName.equals(name)) {
+                return server;
+            }
+        }
+        return null;
     }
 
     public void setServer(String urltext, String serverNickName) {
@@ -231,28 +239,9 @@ public class MonitorFragment extends Fragment {
         monitored = null;
     }
 
-    void threadReport() {
-        int count = 0;
-        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-        for (Thread thread : threadSet) {
-            String text = thread.toString();
-            if (text.contains("AsyncTask"))
-                count++;
-        }
-        Log.v(TAG, "AsyncTasks: " + count);
-    }
-
     private void update() {
-        //threadReport();
-
-        // This code is for updating multiple servers concurrently, which is currently disabled
-      /*for (GlancesInstance server : allGlances) {
-            if (!server.isUpdateExecuting()) {
-                server.update();
-            }
-        }*/
         if (monitored == null) {
-            //Log.v(TAG, "No server being monitored, nothing to do.");
+            Log.v(TAG, "No server being monitored, nothing to do.");
             return;
         }
         monitored.update();
@@ -264,7 +253,7 @@ public class MonitorFragment extends Fragment {
                 updateAgeText.setText(Tools.convertToHumanTime(updateAge) + " old, monitored for " + Tools.convertToHumanTime(monitorTime));
             } else {
                 long waitTime = System.currentTimeMillis() - connectStartTime;
-                updateAgeText.setText(connectText + " " + Tools.convertToHumanTime(waitTime));
+                updateAgeText.setText(R.string.connect_to_server + " " + Tools.convertToHumanTime(waitTime));
             }
         } else {
             nameText.setText(monitored.nickName);
@@ -297,24 +286,20 @@ public class MonitorFragment extends Fragment {
     };
 
     public void startUpdates() {
-        Log.d(TAG, "Started update timer");
-        startUpdatesToast.show();
-        updateHandler.removeCallbacks(updateTimer);
+        Log.d(TAG, "startUpdates");
         updateTimer.run();
     }
 
     public void stopUpdates() {
-        Log.d(TAG, "Stopped update timer");
+        Log.d(TAG, "stopUpdates");
         updateHandler.removeCallbacks(updateTimer);
-        stopUpdatesToast.show();
     }
 
     public void shutdown() {
         stopUpdates();
     }
 
-    public void deleteAllServers() {
-        doNotMonitor();
+    public void removeAllServers() {
         allGlances.clear();
     }
 
@@ -324,11 +309,10 @@ public class MonitorFragment extends Fragment {
             String errMsg = null;
             if (err == UPDATE_ERROR.AUTH_FAILED) {
                 errMsg = "Server does not require password";
-                //Toast.makeText(getActivity(), errMsg, Toast.LENGTH_LONG).show();
             } else if (err == UPDATE_ERROR.CONN_REFUSED) {
-                errMsg = "failed to connect";
+                errMsg = "Failed to connect";
             } else if (err == UPDATE_ERROR.SAX_PARSER_ANDROID_2_X) {
-                errMsg = "Android version too low, cannot parse xml";
+                errMsg = "Android version too low, cannot parse xml (SAX PARSER error)";
             } else if (err == UPDATE_ERROR.AUTH_CHALLENGE_NULL) {
                 errMsg = "Wrong password";
             } else if (err == UPDATE_ERROR.BAD_HOSTNAME) {
