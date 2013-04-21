@@ -31,7 +31,7 @@
         <item name="android:inputType">text</item>
     </style>
     <style name="AboutDialogText" parent="@android:style/TextAppearance.Medium">
-        <item name="android:textColor">#AA8</item>
+        <item name="android:textColor">#CCA</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginLeft">12dp</item>
