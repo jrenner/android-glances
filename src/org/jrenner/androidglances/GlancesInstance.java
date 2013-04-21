@@ -108,8 +108,8 @@ public class GlancesInstance {
             for (int i = 0; i < length; i++) {
                 Glances current = glancesList[i];
                 long updateStartTime = System.currentTimeMillis();
-                Object[] allFields = new Object[]{now, cpu, memory, memorySwap, systemInfo, netInterfaces, fileSystems,
-                                     load, diskIO, limits, hddTemps, processes, procCount, sensors, cores};
+                /*Object[] allFields = new Object[]{now, cpu, memory, memorySwap, systemInfo, netInterfaces, fileSystems,
+                                     load, diskIO, limits, hddTemps, processes, procCount, sensors, cores};*/
                 try {
                     now = current.getNow();
                     cpu = current.getCpu();
@@ -137,6 +137,8 @@ public class GlancesInstance {
                         setErrorCode(UPDATE_ERROR.CONN_REFUSED);
                     } else if (error.contains("Unable to resolve host")) {
                         setErrorCode(UPDATE_ERROR.BAD_HOSTNAME);
+                    } else if (error.contains("java.io.EOFException")){
+                        // do nothing - don't know why it happens, but it doesn't seem harmful!
                     } else {
                         setErrorCode(UPDATE_ERROR.UNDEFINED);
                     }

@@ -40,6 +40,6 @@ public class Tools {
             float sec = (float) SECOND;
             return String.format("%.1f", time / sec);
         }*/
-        return ms + "ms";
+        return "0s";
     }
 }

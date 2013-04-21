@@ -208,16 +208,14 @@ public class TextSetter {
             return false;
         }
         String sensorData = "";
-        int sensorsRetrieved = 0;
         for (Sensor sensor : sensors) {
             if (!"".equals(sensorData)) {
-                sensorsRetrieved++;
                 sensorData += "\n";
             }
             sensorData += sensor.toString();
         }
-        if (sensorsRetrieved == 0) {
-            header.setText("");
+        if ("".equals(sensorData)) {
+            sensorData = activity.getString(R.string.no_data);
         }
         tv.setText(sensorData);
         return true;
@@ -230,16 +228,14 @@ public class TextSetter {
             return false;
         }
         String hddtempData = "";
-        int tempsRetrieved = 0;
         for (HardDriveTemp temp : hddtemps) {
             if (!"".equals(hddtempData)) {
-                tempsRetrieved++;
                 hddtempData += "\n";
             }
             hddtempData += temp.toString();
         }
-        if (tempsRetrieved == 0) {
-            header.setText("");
+        if ("".equals(hddtempData)) {
+            hddtempData = activity.getString(R.string.no_data);
         }
         tv.setText(hddtempData);
         return true;
