@@ -41,6 +41,7 @@
     <string name="cancel">Annuler</string>
 
     <string name="settings_update_interval">Intervalle d\'actualisation</string>
+    <string name="settings_update_interval_summary">Fréquence de récupération des données depuis le serveur Glances</string>
     <string name="settings_update_interval_dialog">Définir l\'intervalle d\'actualisation (en secondes)</string>    
     
     <string name="no_server_selected">Pas de serveur séléctionné</string>
