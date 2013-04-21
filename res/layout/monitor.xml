@@ -46,6 +46,17 @@
         style="@style/MonitorTableTextView"
         android:id="@+id/memory" />
 
+    <ProgressBar 
+        android:id="@+id/pgMemory"
+        android:layout_width="match_parent" 
+        android:layout_height="match_parent"
+        android:maxHeight="5dip"
+        android:minHeight="5dip" 
+        android:indeterminateOnly="false"
+        android:paddingTop="2dip"
+        android:paddingBottom="2dip"
+        android:progressDrawable="@drawable/custom_progress_bar_horizontal" />
+    
     <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/swapHeader"/>

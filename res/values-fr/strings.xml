@@ -54,7 +54,7 @@
     <string name="error_auth_failed">erreur d\'authentification - vérifier le mot de passe</string>
     <string name="error_conn_refused">connexion refusée</string>
     <string name="error_bad_hostname">nom d\'hôte invalide</string>
-    <string name="error_undefined">non définie</string>
+    <string name="error_undefined">erreur non définie</string>
 
     <string name="invalid_port">port %s non valide</string>
     <string name="invalid_url">URL %s non valide</string>

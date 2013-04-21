@@ -1,5 +1,26 @@
 package org.jrenner.androidglances;
 
+import static org.jrenner.androidglances.TextSetter.setCPUHeader;
+import static org.jrenner.androidglances.TextSetter.setCPULoad;
+import static org.jrenner.androidglances.TextSetter.setCPUUsage;
+import static org.jrenner.androidglances.TextSetter.setDiskIO;
+import static org.jrenner.androidglances.TextSetter.setFileSystems;
+import static org.jrenner.androidglances.TextSetter.setHDDTemp;
+import static org.jrenner.androidglances.TextSetter.setMemory;
+import static org.jrenner.androidglances.TextSetter.setNetworks;
+import static org.jrenner.androidglances.TextSetter.setNow;
+import static org.jrenner.androidglances.TextSetter.setProcesses;
+import static org.jrenner.androidglances.TextSetter.setSensors;
+import static org.jrenner.androidglances.TextSetter.setSwap;
+import static org.jrenner.androidglances.TextSetter.setSystemInfo;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.jrenner.androidglances.Constants.UPDATE_ERROR;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,16 +30,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
-import static org.jrenner.androidglances.TextSetter.*;
 
 public class MonitorFragment extends Fragment {
     private static final String TAG = "Glances-MonitorFrag";
@@ -38,6 +52,7 @@ public class MonitorFragment extends Fragment {
     private TextView cpuLoad;
     private TextView memoryHeader;
     private TextView memory;
+    private ProgressBar pgMemory;
     private TextView swapHeader;
     private TextView swap;
     private TextView netHeader;
@@ -89,6 +104,7 @@ public class MonitorFragment extends Fragment {
         cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
         memoryHeader = (TextView) view.findViewById(R.id.memoryHeader);
         memory = (TextView) view.findViewById(R.id.memory);
+        pgMemory = (ProgressBar) view.findViewById(R.id.pgMemory);
         swapHeader = (TextView) view.findViewById(R.id.swapHeader);
         swap = (TextView) view.findViewById(R.id.swap);
         netHeader = (TextView) view.findViewById(R.id.netHeader);
@@ -275,7 +291,7 @@ public class MonitorFragment extends Fragment {
             setCPUHeader(cpuHeader, monitored.cores);
             setCPUUsage(cpuUsage, monitored.cpu);
             setCPULoad(cpuLoad, monitored.load);
-            setMemory(memoryHeader, memory, monitored.memory);
+            setMemory(memoryHeader, memory, monitored.memory, pgMemory);
             setSwap(swapHeader, swap, monitored.memorySwap);
             setNetworks(netHeader, nets, monitored.netInterfaces);
             setFileSystems(fsHeader, fileSystems, monitored.fileSystems);
@@ -283,6 +299,7 @@ public class MonitorFragment extends Fragment {
             setProcesses(procHeader, processes, monitored.processes);
             setSensors(sensorsHeader, sensors, monitored.sensors);
             setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);
+            
             //Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
             monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
