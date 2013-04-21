@@ -3,6 +3,7 @@
     <ListPreference
             android:key="update_interval"
             android:title="@string/settings_update_interval"
+            android:summary="@string/settings_update_interval_summary"
             android:dialogTitle="@string/settings_update_interval_dialog"
             android:entries="@array/update_interval_keys"
             android:entryValues="@array/update_interval_values"
