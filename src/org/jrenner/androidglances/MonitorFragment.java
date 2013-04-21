@@ -3,6 +3,7 @@ package org.jrenner.androidglances;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +16,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
 import static org.jrenner.androidglances.TextSetter.*;
@@ -23,9 +23,10 @@ import static org.jrenner.androidglances.TextSetter.*;
 public class MonitorFragment extends Fragment {
     private static final String TAG = "Glances-MonitorFrag";
     private GlancesInstance monitored;
-    private List<GlancesInstance> allGlances;
+    private static List<GlancesInstance> allGlances;
     private Handler updateHandler;
-    private int updateInterval = 1000;
+    private int checkForUpdateInterval = 1000; // This is how often the monitorFrag checks for updates
+                                               // it is NOT related to the individual server's checkForUpdateInterval
 
     private TextView nameText;
     private TextView serverAddress;
@@ -114,6 +115,17 @@ public class MonitorFragment extends Fragment {
         lastUpdateTime = 0;
     }
 
+    /**
+     * called from UserSettings when user changes update interval preference
+     * @param newInterval
+     */
+    public static void setUpdateInterval(int newInterval) {
+        for (GlancesInstance server: allGlances) {
+            server.setUpdateInterval(newInterval);
+        }
+        resetUpdateTimers();
+    }
+
     public void clearTextValues() {
         for (TextView tv : allTexts) {
             if (tv != null) {
@@ -159,10 +171,13 @@ public class MonitorFragment extends Fragment {
             newServer = new GlancesInstance(url, nickName, password);
         } catch (MalformedURLException e) {
             Log.e(TAG, e.toString());
-            Toast.makeText(getActivity(), "Invalid URL: " + urltext, Toast.LENGTH_LONG).show();
+
+            Toast.makeText(getActivity(), String.format(getString(R.string.invalid_url), urltext), Toast.LENGTH_LONG).show();
             return null;
         }
         newServer.setTimeout(15); // timeout after n seconds
+        int updateInterval = UserSettings.getUpdateIntervalFromSettings(PreferenceManager.getDefaultSharedPreferences(getActivity()));
+        newServer.setUpdateInterval(updateInterval);
         allGlances.add(newServer);
         redrawActionBar();
         return newServer;
@@ -231,23 +246,24 @@ public class MonitorFragment extends Fragment {
         clearHeaderValues();
         clearTextValues();
         lastUpdateTime = 0;
-        serverAddress.setText("No server selected");
+        serverAddress.setText(getString(R.string.no_server_selected));
         updateAgeText.setText("");
         monitored = null;
     }
 
     private void update() {
         if (monitored == null) {
-            Log.v(TAG, "No server being monitored, nothing to do.");
+            //Log.v(TAG, "No server being monitored, nothing to do.");
             return;
         }
         monitored.update();
         if (!monitored.isUpdateWaiting()) {
             //Log.v(TAG, "No update waiting for monitored server: " + monitored.nickName);
             if (lastUpdateTime != 0) {
-                long monitorTime = System.currentTimeMillis() - monitored.monitorStartTime;
                 long updateAge = System.currentTimeMillis() - lastUpdateTime;
-                updateAgeText.setText(Tools.convertToHumanTime(updateAge) + " old, monitored for " + Tools.convertToHumanTime(monitorTime));
+                String monitorStatus = String.format(getString(R.string.monitor_status), Tools.convertToHumanTime(updateAge),
+                        Tools.convertToHumanTime(monitored.getUpdateInterval()));
+                updateAgeText.setText(monitorStatus);
             } else {
                 long waitTime = System.currentTimeMillis() - connectStartTime;
                 updateAgeText.setText(getString(R.string.connect_to_server) + " " + Tools.convertToHumanTime(waitTime));
@@ -278,7 +294,7 @@ public class MonitorFragment extends Fragment {
         @Override
         public void run() {
             update();
-            updateHandler.postDelayed(updateTimer, updateInterval);
+            updateHandler.postDelayed(updateTimer, checkForUpdateInterval);
         }
     };
 
@@ -292,10 +308,6 @@ public class MonitorFragment extends Fragment {
         updateHandler.removeCallbacks(updateTimer);
     }
 
-    public void shutdown() {
-        stopUpdates();
-    }
-
     public void removeAllServers() {
         allGlances.clear();
     }
@@ -304,18 +316,14 @@ public class MonitorFragment extends Fragment {
         UPDATE_ERROR err = monitored.getErrorCode();
         if (err != null) {
             String errMsg = null;
-            if (err == UPDATE_ERROR.AUTH_FAILED) {
-                errMsg = "Server does not require password";
-            } else if (err == UPDATE_ERROR.CONN_REFUSED) {
-                errMsg = "Failed to connect";
-            } else if (err == UPDATE_ERROR.SAX_PARSER_ANDROID_2_X) {
-                errMsg = "Android version too low, cannot parse xml (SAX PARSER error)";
-            } else if (err == UPDATE_ERROR.AUTH_CHALLENGE_NULL) {
-                errMsg = "Wrong password";
+            if (err == UPDATE_ERROR.CONN_REFUSED) {
+                errMsg = getString(R.string.error_conn_refused);
+            } else if (err == UPDATE_ERROR.AUTH_FAILED) {
+                errMsg = getString(R.string.error_auth_failed);
             } else if (err == UPDATE_ERROR.BAD_HOSTNAME) {
-                errMsg = "Unable to resolve host - check server url";
+                errMsg = getString(R.string.error_bad_hostname);
             } else {
-                errMsg = "Undefined error";
+                errMsg = getString(R.string.error_undefined);
             }
             updateTimeText.setText(errMsg);
             monitored.setErrorCode(null);
@@ -324,5 +332,11 @@ public class MonitorFragment extends Fragment {
 
     public GlancesInstance getMonitoredServer() {
         return monitored;
+    }
+
+    public static void resetUpdateTimers() {
+        for (GlancesInstance server : allGlances) {
+            server.resetUpdateTimer();
+        }
     }
 }

@@ -17,7 +17,8 @@
     <string name="action_settings">Settings</string>
     <string name="action_about">About</string>
     <string name="action_quit">Quit</string>
-    
+
+    <string name="monitor_status">%1$s old, refresh every %2$s</string>
     <string name="hard_drive_temperature">Hard Drive Temperatures</string>
     <string name="sensors">Sensors</string>
     <string name="cpu">CPU</string>
@@ -31,18 +32,32 @@
     <string name="used">Used: %1$s / %2$s</string>
     <string name="available">%1$s - %2$s / %3$s available</string>
     <string name="read_write">%1$s: Read %2$s/s, Write %3$s/s</string>
+    <string name="server_removed">removed server: </string>
     
     <string name="add_server">Add a server</string>
     <string name="edit_server">Edit server details</string>
     <string name="remove_server">Remove a server</string>
+
     
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+
+    <string name="settings_update_interval">Update interval</string>
+    <string name="settings_update_interval_dialog">Set new update interval (in seconds)</string>
 
     <string name="no_server_selected">No server selected</string>
     <string name="connect_to_server">Trying to connect to server</string>
     <string name="about_author">author: Jon Renner</string>
     <string name="about_email">rennerjc@gmail.com</string>
     <string name="about_url">Report a bug, or request a feature:\nhttps://github.com/jrenner/android-glances/issues/new</string>
-    <string name="about_glances">To set up a Glances server, visit:\nhttp://nicolargo.github.io/glances/</string>
+    <string name="about_glances">To set up a Glances server, visit:\nhttp://nicolargo.github.io/glances/\nFull list of contributors:\nhttps://github.com/jrenner/android-glances/blob/master/AUTHORS</string>
+
+    <string name="error_auth_failed">authentication error - check password</string>
+    <string name="error_conn_refused">connection refused</string>
+    <string name="error_bad_hostname">bad hostname</string>
+    <string name="error_undefined">undefined</string>
+
+    <string name="invalid_port">port %s is not valid</string>
+    <string name="invalid_url">URL %s is not valid</string>
+    <string name="invalid_server_name">server name %s is not valid</string>
 </resources>

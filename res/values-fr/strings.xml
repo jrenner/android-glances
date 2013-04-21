@@ -13,6 +13,7 @@
     <string name="action_add">Ajouter</string>
     <string name="action_edit">Editer</string>
     <string name="action_delete">Supprimer</string>
+    <string name="action_settings">Réglages</string>
     <string name="action_about">A propos</string>
     <string name="action_quit">Quitter</string>
     

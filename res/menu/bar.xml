@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <item android:id="@+id/action_add_server"
-          android:showAsAction="ifRoom|withText"
+          android:showAsAction="always|withText"
           android:title="@string/action_add"
           android:icon="@drawable/ic_action_add" />
-    <item android:id="@+id/action_remove_server"
-          android:showAsAction="ifRoom|withText"
-          android:title="@string/action_delete"
-          android:icon="@drawable/ic_action_remove" />
-    <menu>
-        <item android:id="@+id/action_edit_server"
-              android:showAsAction="ifRoom|withText"
-              android:title="@string/action_edit"
-              android:icon="@drawable/ic_action_edit"/>
-        <item android:id="@+id/action_settings"
-              android:showAsAction="ifRoom|withText"
-              android:title="@string/action_settings"
-        <item android:id="@+id/action_about"
-              android:showAsAction="ifRoom|withText"
-              android:title="@string/action_about" />
-    </menu>
+    <item android:id="@+id/action_menu1"
+          android:showAsAction="always|withText"
+          android:title="menu"
+          android:icon="@drawable/ic_action_expand_down">
+        <menu>
+            <item android:id="@+id/action_remove_server"
+                  android:showAsAction="ifRoom|withText"
+                  android:title="@string/action_delete"
+                  android:icon="@drawable/ic_action_remove" />
+            <item android:id="@+id/action_edit_server"
+                  android:showAsAction="ifRoom|withText"
+                  android:title="@string/action_edit"
+                  android:icon="@drawable/ic_action_edit"/>
+            <item android:id="@+id/action_settings"
+                  android:showAsAction="ifRoom|withText"
+                  android:title="@string/action_settings"
+                  android:icon="@drawable/ic_action_settings"/>
+            <item android:id="@+id/action_about"
+                  android:showAsAction="ifRoom|withText"
+                  android:title="@string/action_about"
+                  android:icon="@drawable/ic_action_about"/>
+        </menu>
+    </item>
 </menu>

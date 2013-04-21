@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.util.Linkify;
@@ -26,12 +27,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class Main extends SherlockFragmentActivity {
+    private static Main instance;
     private static final String TAG = "Glances-Main";
-    private MonitorFragment monitorFrag;
+    private static MonitorFragment monitorFrag;
     private SpinnerAdapter serverSpinnerAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        instance = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         if (monitorFrag == null) {
@@ -42,9 +45,8 @@ public class Main extends SherlockFragmentActivity {
         ActionBar abar = getSupportActionBar();
         abar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         TextSetter.setActivity(this);
-        loadUserSettings();
         loadServers();
-        Log.i(TAG, "onCreate");
+        monitorFrag.resetUpdateTimers();
     }
 
     @Override
@@ -97,32 +99,16 @@ public class Main extends SherlockFragmentActivity {
         return true;
     }
 
-    public void loadUserSettings() {
-        SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
-        UserSettings.setServerUpdateInterval(userSettings.getLong("serverUpdateInterval", 3000));
+    public static Main getInstance() {
+        return instance;
     }
 
-    public void saveUserSettings() {
-        SharedPreferences userSettings = getSharedPreferences("userSettings", MODE_PRIVATE);
-        SharedPreferences.Editor editor = userSettings.edit();
-        editor.putLong("serverUpdateInterval", UserSettings.getServerUpdateInterval());
-        editor.commit();
-        // after saving, make sure we update all currently running objects with the new settings
-        applyUserSettings();
-    }
-
-    public void applyUserSettings() {
-        for (GlancesInstance server : monitorFrag.getAllGlancesServers()) {
-            server.setUpdateInterval(UserSettings.getServerUpdateInterval());
-        }
-    }
-
-    public void selectServer(String nickName) {
+    public static void selectServer(String nickName) {
         List<GlancesInstance> servers = monitorFrag.getAllGlancesServers();
         for (GlancesInstance server : servers) {
             if (server.nickName.equals(nickName)) {
                 int index = servers.indexOf(server);
-                getSupportActionBar().setSelectedNavigationItem(index);
+                getInstance().getSupportActionBar().setSelectedNavigationItem(index);
             }
         }
     }
@@ -164,9 +150,6 @@ public class Main extends SherlockFragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_quit:
-                shutdownApp();
-                break;
             case R.id.action_add_server:
                 AddServerDialog addDialog = new AddServerDialog();
                 addDialog.show(getSupportFragmentManager(), getString(R.string.add_server));
@@ -176,7 +159,7 @@ public class Main extends SherlockFragmentActivity {
                     EditServerDialog editDialog = new EditServerDialog();
                     editDialog.show(getSupportFragmentManager(), getString(R.string.edit_server));
                 } else {
-                    Toast.makeText(this, "No server selected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getString(R.string.no_server_selected), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.action_remove_server:
@@ -186,6 +169,13 @@ public class Main extends SherlockFragmentActivity {
             case R.id.action_about:
                 AboutDialog aboutDialog = new AboutDialog();
                 aboutDialog.show(getSupportFragmentManager(), getString(R.string.action_about));
+                break;
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, UserSettings.class);
+                startActivity(settingsIntent);
+                break;
+            case R.id.action_menu1:
+                // avoid default
                 break;
             default:
                 Toast.makeText(this, "Unhandled action item", Toast.LENGTH_LONG).show();
@@ -205,13 +195,6 @@ public class Main extends SherlockFragmentActivity {
         fragmentTransaction.commit();
         fragmentManager.executePendingTransactions();
         Log.d(TAG, "Finished init of fragment");
-    }
-
-    void shutdownApp() {
-        // delete sharedprefs for DEBUG
-        Log.w(TAG, "Trying to shutdown");
-        monitorFrag.shutdown();
-        finish();
     }
 
     public static class AboutDialog extends SherlockDialogFragment {
@@ -235,7 +218,7 @@ public class Main extends SherlockFragmentActivity {
         }
     }
 
-    class AddServerDialog extends SherlockDialogFragment {
+    public static class AddServerDialog extends SherlockDialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -264,16 +247,16 @@ public class Main extends SherlockFragmentActivity {
                                 port = "61209"; // default port, some users might expect this behavior
                             }
                             if (!isInteger(port)) {
-                                invalidInput = String.format("Port: '%s' is not a valid", port);
+                                invalidInput = String.format(getString(R.string.invalid_port), port);
                             }
                             if (url.length() < 1) {
-                                invalidInput = String.format("URL: '%s' is too short", url);
+                                invalidInput = String.format(getString(R.string.invalid_url), url);
                             }
                             if (nickName.length() < 1) {
-                                invalidInput = String.format("Server name: '%s' is too short", nickName);
+                                invalidInput = String.format(getString(R.string.invalid_server_name), nickName);
                             }
                             if (invalidInput != null) {
-                                Toast.makeText(getApplicationContext(),
+                                Toast.makeText(getActivity(),
                                         invalidInput, Toast.LENGTH_LONG).show();
                             } else {
                                 String finalURL = smartURL(url, port);
@@ -289,9 +272,13 @@ public class Main extends SherlockFragmentActivity {
                     });
             return builder.create();
         }
+
+        public AddServerDialog() {
+            // don't delete this, it keeps the dialog alive on rotation!
+        }
     }
 
-    class EditServerDialog extends SherlockDialogFragment {
+    public static class EditServerDialog extends SherlockDialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -299,7 +286,6 @@ public class Main extends SherlockFragmentActivity {
             View dialogView = inflater.inflate(R.layout.add_server, null);
             GlancesInstance server = monitorFrag.getMonitoredServer();
             final String originalName = server.nickName;
-
             final EditText urlEdit = (EditText) dialogView.findViewById(R.id.server_url_edittext);
             urlEdit.setText(server.url.getHost());
             final EditText portEdit = (EditText) dialogView.findViewById(R.id.server_port_edittext);
@@ -336,7 +322,7 @@ public class Main extends SherlockFragmentActivity {
                                 invalidInput = String.format("Server name: '%s' is not valid ", nickName);
                             }
                             if (invalidInput != null) {
-                                Toast.makeText(getApplicationContext(),
+                                Toast.makeText(getInstance(),
                                         invalidInput, Toast.LENGTH_LONG).show();
                             } else {
                                 String finalURL = smartURL(url, port);
@@ -354,9 +340,13 @@ public class Main extends SherlockFragmentActivity {
                     });
             return builder.create();
         }
+
+        public EditServerDialog() {
+            // stops crash on rotation
+        }
     }
 
-    class RemoveServerDialog extends SherlockDialogFragment {
+    public static class RemoveServerDialog extends SherlockDialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -366,12 +356,16 @@ public class Main extends SherlockFragmentActivity {
                 public void onClick(DialogInterface dialog, int selection) {
                     boolean removed = monitorFrag.removeServerFromList(serverNames[selection]);
                     if (removed) {
-                        Toast.makeText(getApplicationContext(), "Removed " + serverNames[selection],
+                        Toast.makeText(getInstance(), getString(R.string.server_removed) + serverNames[selection],
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
             });
             return builder.create();
+        }
+
+        public RemoveServerDialog() {
+            // don't delete this, it keeps the dialog alive on rotation!
         }
     }
 
@@ -381,16 +375,15 @@ public class Main extends SherlockFragmentActivity {
      * @param userPort
      * @return
      */
-    String smartURL(String userURL, String userPort) {
+    static String smartURL(String userURL, String userPort) {
         // cut out user inputted http:// if its there
         String url = userURL.replace("http://", "");
         // now we make sure it's there by doing it ourselves
         url = "http://" + url + ":" + userPort;
-        Log.i(TAG, "Final URL from user input: " + url);
         return url;
     }
 
-    boolean isInteger(String s) {
+    static boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
         } catch(NumberFormatException e) {
