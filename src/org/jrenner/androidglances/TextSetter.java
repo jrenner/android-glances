@@ -176,9 +176,9 @@ public class TextSetter {
             handleNull(tv);
             return false;
         }
-        header.setText("Top 10 Processes by CPU + Memory");
+        header.setText(activity.getString(R.string.textsetter_top_processes));
         if (processes.size() == 0) {
-            tv.setText("Process data disabled by server");
+            tv.setText(activity.getString(R.string.textsetter_processes_disabled));
             return true;
         }
         String procData = "";
@@ -208,11 +208,16 @@ public class TextSetter {
             return false;
         }
         String sensorData = "";
+        int sensorsRetrieved = 0;
         for (Sensor sensor : sensors) {
             if (!"".equals(sensorData)) {
+                sensorsRetrieved++;
                 sensorData += "\n";
             }
             sensorData += sensor.toString();
+        }
+        if (sensorsRetrieved == 0) {
+            header.setText("");
         }
         tv.setText(sensorData);
         return true;
@@ -225,11 +230,16 @@ public class TextSetter {
             return false;
         }
         String hddtempData = "";
+        int tempsRetrieved = 0;
         for (HardDriveTemp temp : hddtemps) {
             if (!"".equals(hddtempData)) {
+                tempsRetrieved++;
                 hddtempData += "\n";
             }
             hddtempData += temp.toString();
+        }
+        if (tempsRetrieved == 0) {
+            header.setText("");
         }
         tv.setText(hddtempData);
         return true;

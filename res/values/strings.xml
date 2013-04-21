@@ -55,9 +55,12 @@
     <string name="error_auth_failed">authentication error - check password</string>
     <string name="error_conn_refused">connection refused</string>
     <string name="error_bad_hostname">bad hostname</string>
-    <string name="error_undefined">undefined</string>
+    <string name="error_undefined">undefined error</string>
 
     <string name="invalid_port">port %s is not valid</string>
     <string name="invalid_url">URL %s is not valid</string>
     <string name="invalid_server_name">server name %s is not valid</string>
+
+    <string name="textsetter_processes_disabled">process data disabled by server</string>
+    <string name="textsetter_top_processes">Top 10 Processes by CPU + Memory</string>
 </resources>

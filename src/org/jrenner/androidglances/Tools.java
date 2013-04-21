@@ -34,6 +34,12 @@ public class Tools {
             s = ms / SECOND;
             return s + "s";
         }
+        // in practice, this is ugly, but let's keep the code around
+/*        if (ms >= (SECOND / 10)) {
+            float time = (float) ms;
+            float sec = (float) SECOND;
+            return String.format("%.1f", time / sec);
+        }*/
         return ms + "ms";
     }
 }

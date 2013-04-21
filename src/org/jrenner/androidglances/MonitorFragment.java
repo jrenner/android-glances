@@ -25,9 +25,9 @@ public class MonitorFragment extends Fragment {
     private GlancesInstance monitored;
     private static List<GlancesInstance> allGlances;
     private Handler updateHandler;
-    private int checkForUpdateInterval = 1000; // This is how often the monitorFrag checks for updates
-                                               // it is NOT related to the individual server's checkForUpdateInterval
-
+    // This is how often the monitorFrag checks for updates
+    // it is NOT related to the individual server's updateInterval
+    private int checkForUpdateInterval = 100;  // milliseconds
     private TextView nameText;
     private TextView serverAddress;
     private TextView updateTimeText;
@@ -315,6 +315,8 @@ public class MonitorFragment extends Fragment {
     public void handleErrors() {
         UPDATE_ERROR err = monitored.getErrorCode();
         if (err != null) {
+            clearHeaderValues();
+            clearTextValues();
             String errMsg = null;
             if (err == UPDATE_ERROR.CONN_REFUSED) {
                 errMsg = getString(R.string.error_conn_refused);
