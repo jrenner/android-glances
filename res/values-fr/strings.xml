@@ -59,5 +59,8 @@
     <string name="invalid_port">port %s non valide</string>
     <string name="invalid_url">URL %s non valide</string>
     <string name="invalid_server_name">nom de serveur %s non valide</string>    
+
+    <string name="textsetter_processes_disabled">Informations Processus désactivées par le serveur</string>
+    <string name="textsetter_top_processes">Top 10 des Processus par CPU + Mémoire</string>
     
 </resources>
