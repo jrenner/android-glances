@@ -9,10 +9,6 @@
           android:title="menu"
           android:icon="@drawable/ic_action_expand_down">
         <menu>
-            <item android:id="@+id/action_remove_server"
-                  android:showAsAction="ifRoom|withText"
-                  android:title="@string/action_delete"
-                  android:icon="@drawable/ic_action_remove" />
             <item android:id="@+id/action_edit_server"
                   android:showAsAction="ifRoom|withText"
                   android:title="@string/action_edit"
@@ -25,6 +21,10 @@
                   android:showAsAction="ifRoom|withText"
                   android:title="@string/action_about"
                   android:icon="@drawable/ic_action_about"/>
+            <item android:id="@+id/action_remove_server"
+                  android:showAsAction="ifRoom|withText"
+                  android:title="@string/action_delete"
+                  android:icon="@drawable/ic_action_remove" />
         </menu>
     </item>
 </menu>

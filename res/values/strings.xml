@@ -43,7 +43,7 @@
     <string name="cancel">Cancel</string>
 
     <string name="settings_update_interval">Update interval</string>
-    <string name="settings_update_inerval">How often to fetch data from Glances server</string>
+    <string name="settings_update_interval_summary">How often to fetch data from Glances server</string>
     <string name="settings_update_interval_dialog">Set new update interval (in seconds)</string>
 
     <string name="no_server_selected">No server selected</string>
