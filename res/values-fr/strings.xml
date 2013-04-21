@@ -13,10 +13,11 @@
     <string name="action_add">Ajouter</string>
     <string name="action_edit">Editer</string>
     <string name="action_delete">Supprimer</string>
-    <string name="action_settings">Réglages</string>
+    <string name="action_settings">Paramètres</string>
     <string name="action_about">A propos</string>
     <string name="action_quit">Quitter</string>
     
+    <string name="monitor_status">depuis %1$s, actualisation toutes les %2$s</string>
     <string name="hard_drive_temperature">Températures Disques</string>
     <string name="sensors">Capteurs</string>
     <string name="cpu">Processeur</string>
@@ -30,18 +31,32 @@
     <string name="used">Utilisées: %1$s / %2$s</string>
     <string name="available">%1$s - %2$s / %3$s disponible</string>
     <string name="read_write">%1$s: Lecture %2$s/s, Ecriture %3$s/s</string>
+    <string name="server_removed">suppression du serveur: </string>    
     
     <string name="add_server">Ajouter un serveur</string>
     <string name="edit_server">Editer un serveur</string>
     <string name="remove_server">Supprimer un serveur</string>
     
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
 
+    <string name="settings_update_interval">Intervalle d\'actualisation</string>
+    <string name="settings_update_interval_dialog">Définir l\'intervalle d\'actualisation (en secondes)</string>    
+    
     <string name="no_server_selected">Pas de serveur séléctionné</string>
     <string name="connect_to_server">Tentative de connexion au serveur</string>
     <string name="about_author">auteur: Jon Renner</string>
     <string name="about_email">rennerjc@gmail.com</string>
     <string name="about_url">Rapporter un bug, ou demander une fonctionnalité:\nhttps://github.com/jrenner/android-glances/issues/new</string>
     <string name="about_glances">Pour installer le serveur Glances:\nhttp://nicolargo.github.io/glances/</string>
+
+    <string name="error_auth_failed">erreur d\'authentification - vérifier le mot de passe</string>
+    <string name="error_conn_refused">connexion refusée</string>
+    <string name="error_bad_hostname">nom d\'hôte invalide</string>
+    <string name="error_undefined">non définie</string>
+
+    <string name="invalid_port">port %s non valide</string>
+    <string name="invalid_url">URL %s non valide</string>
+    <string name="invalid_server_name">nom de serveur %s non valide</string>    
+    
 </resources>
