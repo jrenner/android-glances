@@ -1,6 +1,7 @@
 package org.jrenner.androidglances;
 
 import android.app.Activity;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.jrenner.glances.*;
 import org.jrenner.glances.Process;
@@ -78,7 +79,7 @@ public class TextSetter {
         return true;
     }
 
-    public static boolean setMemory(TextView header, TextView tv, Memory mem) {
+    public static boolean setMemory(TextView header, TextView tv, Memory mem, ProgressBar pgMemory) {
         header.setText(activity.getString(R.string.memory));
         if (mem == null) {
             handleNull(tv);
@@ -87,6 +88,7 @@ public class TextSetter {
         String memTotal = Glances.autoUnit(mem.getTotal());
         String memUsed = Glances.autoUnit(mem.getUsed());
         tv.setText(activity.getString(R.string.used, memUsed, memTotal));
+        pgMemory.setProgress((int)(mem.getUsed()*100/mem.getTotal()));
         return true;
     }
 
