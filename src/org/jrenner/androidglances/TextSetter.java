@@ -1,6 +1,7 @@
 package org.jrenner.androidglances;
 
 import android.app.Activity;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import org.jrenner.glances.*;
@@ -59,13 +60,17 @@ public class TextSetter {
         return true;
     }
 
-    public static boolean setCPUUsage(TextView tv, Cpu cpu) {
+    public static boolean setCPUUsage(TextView tv, Cpu cpu, ProgressBar pgCpu) {
         if (cpu == null) {
             handleNull(tv);
+            pgCpu.setVisibility(View.INVISIBLE);
             return false;
         }
-        tv.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", 100 - cpu.getIdle(),
+        pgCpu.setVisibility(View.VISIBLE);
+        float cpuUsed = 100 - cpu.getIdle();
+        tv.setText(String.format("Usage: %4.1f%%, User: %4.1f%%, System: %4.1f%%", cpuUsed,
                 cpu.getUser(), cpu.getSystem()));
+        pgCpu.setProgress((int) (cpuUsed));
         return true;
     }
 
@@ -83,12 +88,14 @@ public class TextSetter {
         header.setText(activity.getString(R.string.memory));
         if (mem == null) {
             handleNull(tv);
+            pgMemory.setVisibility(View.INVISIBLE);
             return false;
         }
+        pgMemory.setVisibility(View.VISIBLE);
         String memTotal = Glances.autoUnit(mem.getTotal());
         String memUsed = Glances.autoUnit(mem.getUsed());
         tv.setText(activity.getString(R.string.used, memUsed, memTotal));
-        pgMemory.setProgress((int)(mem.getUsed()*100/mem.getTotal()));
+        pgMemory.setProgress((int) (mem.getUsed() * 100 / mem.getTotal()));
         return true;
     }
 

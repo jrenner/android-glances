@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- Layouts -->
+    <style name="SimpleHorizontal">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- TextViews -->
+
     <style name="MonitorTableHeader" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -13,7 +22,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">#AAA</item>
         <item name="android:textSize">14sp</item>
-        <item name="android:layout_marginLeft">18dp</item>
+        <item name="android:layout_marginLeft">24dp</item>
         <item name="android:layout_marginRight">6dp</item>
     </style>
     <style name="DialogItemTitle" parent="@android:style/TextAppearance.Medium">
@@ -41,5 +50,20 @@
     </style>
     <style name="AboutDialogTextSmall" parent="@style/AboutDialogText">
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <!-- Progress Bars -->
+
+    <style name="ThinProgressBar">
+        <item name="android:layout_width">180dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxHeight">8dip</item>
+        <item name="android:minHeight">8dip</item>
+        <item name="android:layout_marginLeft">24dp</item>
+        <item name="android:layout_marginRight">6dp</item>
+        <item name="android:indeterminateOnly">false</item>
+        <item name="android:paddingTop">2dip</item>
+        <item name="android:paddingBottom">2dip</item>
+        <item name="android:progressDrawable">@drawable/custom_progress_bar_horizontal</item>
     </style>
 </resources>

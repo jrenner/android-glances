@@ -49,6 +49,7 @@ public class MonitorFragment extends Fragment {
     private TextView systemText;
     private TextView cpuHeader;
     private TextView cpuUsage;
+    private ProgressBar pgCpu;
     private TextView cpuLoad;
     private TextView memoryHeader;
     private TextView memory;
@@ -101,6 +102,7 @@ public class MonitorFragment extends Fragment {
         systemText = (TextView) view.findViewById(R.id.systemText);
         cpuHeader = (TextView) view.findViewById(R.id.CPUHeader);
         cpuUsage = (TextView) view.findViewById(R.id.cpuUsage);
+        pgCpu = (ProgressBar) view.findViewById(R.id.pgCpu);
         cpuLoad = (TextView) view.findViewById(R.id.cpuLoad);
         memoryHeader = (TextView) view.findViewById(R.id.memoryHeader);
         memory = (TextView) view.findViewById(R.id.memory);
@@ -155,6 +157,7 @@ public class MonitorFragment extends Fragment {
             if (tv != null) {
                 tv.setText("");
             }
+            pgMemory.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -234,6 +237,7 @@ public class MonitorFragment extends Fragment {
     }
 
     public void setServer(String urltext, String serverNickName) {
+        hideProgressBars();
         lastUpdateTime = 0;
         GlancesInstance selection = null;
         for (GlancesInstance server : allGlances) {
@@ -269,6 +273,7 @@ public class MonitorFragment extends Fragment {
 
     private void update() {
         if (monitored == null) {
+            hideProgressBars();
             //Log.v(TAG, "No server being monitored, nothing to do.");
             return;
         }
@@ -289,7 +294,7 @@ public class MonitorFragment extends Fragment {
             setNow(updateTimeText, monitored.now);
             setSystemInfo(systemText, monitored.systemInfo);
             setCPUHeader(cpuHeader, monitored.cores);
-            setCPUUsage(cpuUsage, monitored.cpu);
+            setCPUUsage(cpuUsage, monitored.cpu, pgCpu);
             setCPULoad(cpuLoad, monitored.load);
             setMemory(memoryHeader, memory, monitored.memory, pgMemory);
             setSwap(swapHeader, swap, monitored.memorySwap);
@@ -332,8 +337,12 @@ public class MonitorFragment extends Fragment {
     public void handleErrors() {
         UPDATE_ERROR err = monitored.getErrorCode();
         if (err != null) {
-            clearHeaderValues();
-            clearTextValues();
+            if (err != UPDATE_ERROR.UNDEFINED) {
+                // don't clear the screen on undefined error, it could be a very small error, just keep going as usual
+                clearHeaderValues();
+                clearTextValues();
+                hideProgressBars();
+            }
             String errMsg = null;
             if (err == UPDATE_ERROR.CONN_REFUSED) {
                 errMsg = getString(R.string.error_conn_refused);
@@ -356,6 +365,13 @@ public class MonitorFragment extends Fragment {
     public static void resetUpdateTimers() {
         for (GlancesInstance server : allGlances) {
             server.resetUpdateTimer();
+        }
+    }
+
+    public void hideProgressBars() {
+        ProgressBar[] bars = {pgCpu, pgMemory};
+        for (ProgressBar bar : bars) {
+            bar.setVisibility(View.INVISIBLE);
         }
     }
 }

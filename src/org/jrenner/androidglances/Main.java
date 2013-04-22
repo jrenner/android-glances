@@ -355,7 +355,7 @@ public class Main extends SherlockFragmentActivity {
                 public void onClick(DialogInterface dialog, int selection) {
                     boolean removed = monitorFrag.removeServerFromList(serverNames[selection]);
                     if (removed) {
-                        Toast.makeText(getInstance(), getString(R.string.server_removed) + serverNames[selection],
+                        Toast.makeText(getInstance(), getString(R.string.server_removed) + " " + serverNames[selection],
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
