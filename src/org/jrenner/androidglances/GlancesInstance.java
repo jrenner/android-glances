@@ -139,6 +139,8 @@ public class GlancesInstance {
                         setErrorCode(UPDATE_ERROR.BAD_HOSTNAME);
                     } else if (error.contains("java.io.EOFException")){
                         // do nothing - don't know why it happens, but it doesn't seem harmful!
+                    } else if (error.contains("method") && error.contains("not supported")) {
+                        // do nothing - older versions of glances won't support newer features like getHDDTemp
                     } else {
                         setErrorCode(UPDATE_ERROR.UNDEFINED);
                     }
