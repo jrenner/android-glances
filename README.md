@@ -8,7 +8,7 @@ The primary use is to monitor a machine over a network.</b>
 - [java-glances](http://github.com/jrenner/java-glances)<br>
     * (and its dependencies):
 	* Google gson
-	* Apache XML-RPC
+	* [aXMLRPC](https://github.com/timroes/aXMLRPC)
 	* you can get a jar that has java-glances and its dependencies [here](https://github.com/jrenner/java-glances/tree/master/bin)
 - ActionBarSherlock
 
