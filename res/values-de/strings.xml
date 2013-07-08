@@ -1,4 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Android Glances</string>
+    <string name="app_version">0.4.1</string>
+    
+    <string name="ip_hostname">IP oder Hostname</string>
+    <string name="port">Port</string>
+    <string name="password">Passwort (leer für keins)</string>
+    <string name="server_name">Server Name</string>
+    <string name="server_name_hint">Home PC</string>
+    <string name="server_url_hint">server.example.com</string>
+    <string name="default_port">61209</string>
+    
+    <string name="action_add">Hinzufügen</string>
+    <string name="action_delete">Löschen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_settings">Einstellungen</string>
+    <string name="action_about">Über</string>
+    <string name="action_quit">Beenden</string>
+
+    <string name="monitor_status">%1$s alt, bearbeiten alle %2$s</string>
+    <string name="hard_drive_temperature">Festplatten Temperatur</string>
+    <string name="sensors">Sensoren</string>
+    <string name="cpu">CPU</string>
+    <string name="memory">Arbeitsspeicher</string>
+    <string name="swap">Swap</string>
+    <string name="network_interfaces">Netzwerk Schnittstellen</string>
+    <string name="file_systems">Dateisysteme</string>
+    <string name="disk_io">Disk IO</string>
+    <string name="cpu_cores">CPU (%d Kerne)</string>
+    <string name="no_data">keine Daten</string>
+    <string name="used">Verwendet: %1$s / %2$s</string>
+    <string name="available">%1$s - %2$s / %3$s verfügbar</string>
+    <string name="read_write">%1$s: Lesen %2$s/s, Schreiben %3$s/s</string>
+    <string name="server_removed">gelöschter Server: </string>
+    
+    <string name="add_server">Server hinzufügen</string>
+    <string name="edit_server">Server Details bearbeiten</string>
+    <string name="remove_server">Server entfernen</string>
+    
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+
+    <string name="settings_update_interval">Update Interval</string>
+    <string name="settings_update_interval_summary">Wie oft sollen Daten vom Glances Server abgerufen werden</string>
+    <string name="settings_update_interval_dialog">Neues update Interval einstellen(in Sekunden)</string>
+
+    <string name="no_server_selected">Kein Server ausgewählt</string>
+    <string name="connect_to_server">Verbindungsversuch zum Server</string>
+    <string name="about_author">Author: Jon Renner</string>
+    <string name="about_email">rennerjc@gmail.com</string>
+    <string name="about_url">Melde einen Fehler, oder erfrage ein neues Feature:\nhttps://github.com/jrenner/android-glances/issues/new</string>
+    <string name="about_glances">Um einen Glances Server aufzusetzen, besuche:\nhttp://nicolargo.github.io/glances/\nFull Liste der Beitragenden:\nhttps://github.com/jrenner/android-glances/blob/master/AUTHORS</string>
+
+    <string name="error_auth_failed">Authentifikation fehlgeschlagen - Passwort überprüfen</string>
+    <string name="error_conn_refused">Verbindung verweigert</string>
+    <string name="error_bad_hostname">Ungültiger Hostname</string>
+    <string name="error_undefined">Unbekannter Fehler</string>
+
+    <string name="invalid_port">Port %s ist ungültig</string>
+    <string name="invalid_url">URL %s ist ungültig</string>
+    <string name="invalid_server_name">Servername %s ist ungültig</string>
+
+    <string name="textsetter_processes_disabled">Prozessdaten wurden vom Server deaktiviert</string>
+    <string name="textsetter_top_processes">Top 10 Prozesse von CPU + Memory</string>
 </resources>
