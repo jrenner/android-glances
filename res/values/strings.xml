@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Android Glances</string>
-    <string name="app_version">0.4.1</string>
+    <string name="app_version">0.4.2</string>
     
     <string name="ip_hostname">IP or Hostname</string>
     <string name="port">Port</string>
