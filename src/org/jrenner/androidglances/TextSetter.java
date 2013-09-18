@@ -51,6 +51,49 @@ public class TextSetter {
         return true;
     }
 
+	public static boolean setBatteries(TextView header, TextView tv, List<Battery> batteries) {
+		header.setText(activity.getString(R.string.battery));
+		if (batteries == null || batteries.isEmpty()) {
+			handleNull(tv);
+			return false;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (Battery bat : batteries) {
+			sb.append("battery charge: " + bat.getBatteryPercent() + "%%");
+		}
+		tv.setText(tv.toString());
+		return true;
+	}
+
+	public static boolean setMonitoredProcesses(TextView header, TextView tv, List<MonitoredProcess> monProcs, List<Process> procs) {
+		header.setText(activity.getString(R.string.monitored_processes));
+		if (monProcs == null || monProcs.isEmpty()) {
+			handleNull(tv);
+			return false;
+		}
+		StringBuilder sb = new StringBuilder();
+		for (MonitoredProcess monProc : monProcs) {
+			int count = 0;
+			for (Process proc : procs) {
+				if (proc.getName().matches(monProc.getRegex())) {
+					count++;
+				}
+			}
+			sb.append("(" + count + ") ");
+			sb.append(monProc.getDescription());
+			sb.append(", command: ");
+			sb.append(monProc.getCommand());
+			sb.append(", min/max: ");
+			sb.append(monProc.getCountmin());
+			sb.append(", ");
+			sb.append(monProc.getCountmax());
+			sb.append("\n");
+		}
+		sb.delete(sb.length() -1, sb.length());
+		tv.setText(sb.toString());
+		return true;
+	}
+
     public static boolean setCPUHeader(TextView tv, Integer cores) {
         if (cores == null) {
             tv.setText(activity.getString(R.string.cpu));
@@ -170,28 +213,20 @@ public class TextSetter {
         return true;
     }
 
-    static Comparator<Process> processCPUPlusMemoryComparator = new Comparator<Process>() {
-        public int compare(Process p1, Process p2) {
-            double p1score = p1.getCpuPercent() + p1.getMemoryPercent();
-            double p2score = p2.getCpuPercent() + p2.getMemoryPercent();
-            if (p1score == p2score)
-                return 0;
-            return p1score > p2score ? -1 : 1;
-        }
-    };
-
     public static boolean setProcesses(TextView header, TextView tv, List<Process> processes) {
-        if (processes == null) {
+        if (processes == null || processes.size() == 0) {
             handleNull(tv);
             return false;
         }
-        header.setText(activity.getString(R.string.textsetter_top_processes));
+		Comparator<Process> comp = ProcessComparators.getActiveComparator();
+		header.setText(activity.getString(R.string.textsetter_top_processes) + " " + ProcessComparators.compNames.get(comp));
         if (processes.size() == 0) {
             tv.setText(activity.getString(R.string.textsetter_processes_disabled));
             return true;
         }
         String procData = "";
-        Collections.sort(processes, processCPUPlusMemoryComparator);
+        Collections.sort(processes, comp);
+		Collections.reverse(processes);
         int count = 0;
         int numToAdd = 10;
         for (Process proc : processes) {
@@ -212,7 +247,7 @@ public class TextSetter {
 
     public static boolean setSensors(TextView header, TextView tv, List<Sensor> sensors) {
         header.setText(activity.getString(R.string.sensors));
-        if (sensors == null) {
+        if (sensors == null || sensors.size() == 0) {
             handleNull(tv);
             return false;
         }
@@ -224,7 +259,8 @@ public class TextSetter {
             sensorData += sensor.toString();
         }
         if ("".equals(sensorData)) {
-            sensorData = activity.getString(R.string.no_data);
+            handleNull(tv);
+			return false;
         }
         tv.setText(sensorData);
         return true;
@@ -232,7 +268,7 @@ public class TextSetter {
 
     public static boolean setHDDTemp(TextView header, TextView tv, List<HardDriveTemp> hddtemps) {
         header.setText(activity.getString(R.string.hard_drive_temperature));
-        if (hddtemps == null) {
+        if (hddtemps == null || hddtemps.size() == 0) {
             handleNull(tv);
             return false;
         }
@@ -244,7 +280,8 @@ public class TextSetter {
             hddtempData += temp.toString();
         }
         if ("".equals(hddtempData)) {
-            hddtempData = activity.getString(R.string.no_data);
+            handleNull(tv);
+			return false;
         }
         tv.setText(hddtempData);
         return true;

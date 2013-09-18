@@ -1,26 +1,5 @@
 package org.jrenner.androidglances;
 
-import static org.jrenner.androidglances.TextSetter.setCPUHeader;
-import static org.jrenner.androidglances.TextSetter.setCPULoad;
-import static org.jrenner.androidglances.TextSetter.setCPUUsage;
-import static org.jrenner.androidglances.TextSetter.setDiskIO;
-import static org.jrenner.androidglances.TextSetter.setFileSystems;
-import static org.jrenner.androidglances.TextSetter.setHDDTemp;
-import static org.jrenner.androidglances.TextSetter.setMemory;
-import static org.jrenner.androidglances.TextSetter.setNetworks;
-import static org.jrenner.androidglances.TextSetter.setNow;
-import static org.jrenner.androidglances.TextSetter.setProcesses;
-import static org.jrenner.androidglances.TextSetter.setSensors;
-import static org.jrenner.androidglances.TextSetter.setSwap;
-import static org.jrenner.androidglances.TextSetter.setSystemInfo;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.jrenner.androidglances.Constants.UPDATE_ERROR;
-
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,9 +9,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import org.jrenner.androidglances.Constants.UPDATE_ERROR;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.jrenner.androidglances.TextSetter.*;
 
 public class MonitorFragment extends Fragment {
     private static final String TAG = "Glances-MonitorFrag";
@@ -43,10 +31,13 @@ public class MonitorFragment extends Fragment {
     // it is NOT related to the individual server's updateInterval
     private int checkForUpdateInterval = 100;  // milliseconds
     private TextView nameText;
+	private TextView versionText;
     private TextView serverAddress;
     private TextView updateTimeText;
     private TextView updateAgeText;
     private TextView systemText;
+	private TextView batteryHeader;
+	private TextView batteryText;
     private TextView cpuHeader;
     private TextView cpuUsage;
     private ProgressBar pgCpu;
@@ -68,11 +59,15 @@ public class MonitorFragment extends Fragment {
     private TextView sensors;
     private TextView procHeader;
     private TextView processes;
+	private TextView monitoredProcessHeader;
+	private TextView monitoredProcessText;
 
     private TextView[] allHeaders;
     private TextView[] allTexts;
     private long lastUpdateTime;
     private long connectStartTime; // time of trying to get first update from a server after start of monitoring
+
+	private LinearLayout monitorTable;
 
     @Override
     public void onCreate(Bundle onSavedInstance) {
@@ -93,13 +88,17 @@ public class MonitorFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.monitor, container, false);
+		monitorTable = (LinearLayout) view;
 
         // assign views
         nameText = (TextView) view.findViewById(R.id.nameText);
+		versionText = (TextView) view.findViewById(R.id.versionText);
         serverAddress = (TextView) view.findViewById(R.id.serverAddress);
         updateTimeText = (TextView) view.findViewById(R.id.updateTimeText);
         updateAgeText = (TextView) view.findViewById(R.id.updateAgeText);
         systemText = (TextView) view.findViewById(R.id.systemText);
+		batteryHeader = (TextView) view.findViewById(R.id.batteryHeader);
+		batteryText = (TextView) view.findViewById(R.id.batteryText);
         cpuHeader = (TextView) view.findViewById(R.id.CPUHeader);
         cpuUsage = (TextView) view.findViewById(R.id.cpuUsage);
         pgCpu = (ProgressBar) view.findViewById(R.id.pgCpu);
@@ -117,15 +116,17 @@ public class MonitorFragment extends Fragment {
         diskIO = (TextView) view.findViewById(R.id.diskIO);
         procHeader = (TextView) view.findViewById(R.id.procHeader);
         processes = (TextView) view.findViewById(R.id.processes);
+		monitoredProcessHeader = (TextView) view.findViewById(R.id.monProcHeader);
+		monitoredProcessText = (TextView) view.findViewById(R.id.monProcText);
         hddTempHeader = (TextView) view.findViewById(R.id.hddTempHeader);
         hddTemp = (TextView) view.findViewById(R.id.hddTemp);
         sensorsHeader = (TextView) view.findViewById(R.id.sensorsHeader);
         sensors = (TextView) view.findViewById(R.id.sensors);
 
         allHeaders = new TextView[]{nameText, cpuHeader, memoryHeader, swapHeader, netHeader, fsHeader, diskIOHeader,
-                     procHeader, hddTempHeader, sensorsHeader};
+                     procHeader, hddTempHeader, sensorsHeader, batteryHeader, monitoredProcessHeader};
         allTexts = new TextView[]{updateTimeText, systemText, cpuUsage, cpuLoad, memory, swap, nets, diskIO, fileSystems,
-                   hddTemp, sensors, processes};
+                   hddTemp, sensors, processes, batteryText, monitoredProcessText};
         return view;
     }
 
@@ -291,24 +292,96 @@ public class MonitorFragment extends Fragment {
             }
         } else {
             nameText.setText(monitored.nickName);
+
+			versionText.setText("server glances version: " + monitored.getGlancesServerVersion());
+
             setNow(updateTimeText, monitored.now);
+
             setSystemInfo(systemText, monitored.systemInfo);
+
+			boolean hasBatteries = setBatteries(batteryHeader, batteryText, monitored.batteries);
+			if (hasBatteries) {
+				addIfNotInLayout(monitorTable, batteryHeader);
+				addIfNotInLayout(monitorTable, batteryText);
+			} else {
+				monitorTable.removeView(batteryHeader);
+				monitorTable.removeView(batteryText);
+			}
+
             setCPUHeader(cpuHeader, monitored.cores);
+
             setCPUUsage(cpuUsage, monitored.cpu, pgCpu);
+
             setCPULoad(cpuLoad, monitored.load);
+
             setMemory(memoryHeader, memory, monitored.memory, pgMemory);
+
             setSwap(swapHeader, swap, monitored.memorySwap);
-            setNetworks(netHeader, nets, monitored.netInterfaces);
+
+            boolean hasNet = setNetworks(netHeader, nets, monitored.netInterfaces);
+			if (hasNet) {
+				addIfNotInLayout(monitorTable, netHeader);
+				addIfNotInLayout(monitorTable, nets);
+			} else {
+				monitorTable.removeView(netHeader);
+				monitorTable.removeView(nets);
+			}
+
             setFileSystems(fsHeader, fileSystems, monitored.fileSystems);
+
             setDiskIO(diskIOHeader, diskIO, monitored.diskIO);
-            setProcesses(procHeader, processes, monitored.processes);
-            setSensors(sensorsHeader, sensors, monitored.sensors);
-            setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);
+
+			boolean hasMonProcs = setMonitoredProcesses(monitoredProcessHeader, monitoredProcessText,
+					monitored.monitoredProcesses, monitored.processes);
+			if (hasMonProcs) {
+				addIfNotInLayout(monitorTable, monitoredProcessHeader);
+				addIfNotInLayout(monitorTable, monitoredProcessText);
+			} else {
+				monitorTable.removeView(monitoredProcessHeader);
+				monitorTable.removeView(monitoredProcessText);
+			}
+
+            boolean hasProcs = setProcesses(procHeader, processes, monitored.processes);
+			if (hasProcs) {
+				addIfNotInLayout(monitorTable, procHeader);
+				addIfNotInLayout(monitorTable, processes);
+			} else {
+				monitorTable.removeView(procHeader);
+				monitorTable.removeView(processes);
+			}
+
+            boolean hasSensors = setSensors(sensorsHeader, sensors, monitored.sensors);
+			if (hasSensors) {
+				addIfNotInLayout(monitorTable, sensorsHeader);
+				addIfNotInLayout(monitorTable, sensors);
+			} else {
+				monitorTable.removeView(sensorsHeader);
+				monitorTable.removeView(sensors);
+			}
+
+            boolean hasDriveTemps = setHDDTemp(hddTempHeader, hddTemp, monitored.hddTemps);
+			if (hasDriveTemps) {
+				addIfNotInLayout(monitorTable, hddTempHeader);
+				addIfNotInLayout(monitorTable, hddTemp);
+			} else {
+				monitorTable.removeView(hddTempHeader);
+				monitorTable.removeView(hddTemp);
+			}
             
             //Log.v(TAG, "Got update from monitored server: " + monitored.nickName + " - " + monitored.now.toString());
             lastUpdateTime = System.currentTimeMillis();
             monitored.setUpdateWaiting(false); // we processed this update already, so set false and wait for next update
         }
+		for (int i = 0; i < monitorTable.getChildCount(); i++) {
+			View v = monitorTable.getChildAt(i);
+			if (!(v instanceof TextView)) {
+				continue;
+			}
+			TextView tv = (TextView) v;
+			if (tv.getText().toString().contains("data")) {
+				Log.e(TAG, "found rogue text view: " + tv.toString() + ", " + tv.getId());
+			}
+		}
         handleErrors();
     }
 
@@ -343,16 +416,7 @@ public class MonitorFragment extends Fragment {
                 clearTextValues();
                 hideProgressBars();
             }
-            String errMsg = null;
-            if (err == UPDATE_ERROR.CONN_REFUSED) {
-                errMsg = getString(R.string.error_conn_refused);
-            } else if (err == UPDATE_ERROR.AUTH_FAILED) {
-                errMsg = getString(R.string.error_auth_failed);
-            } else if (err == UPDATE_ERROR.BAD_HOSTNAME) {
-                errMsg = getString(R.string.error_bad_hostname);
-            } else {
-                errMsg = getString(R.string.error_undefined);
-            }
+            String errMsg = monitored.getErrorText(err);
             updateTimeText.setText(errMsg);
             monitored.setErrorCode(null);
         }
@@ -374,4 +438,14 @@ public class MonitorFragment extends Fragment {
             bar.setVisibility(View.INVISIBLE);
         }
     }
+
+	private static boolean hasView(LinearLayout layout, View view) {
+		return layout.findViewById(view.getId()) != null;
+	}
+
+	private static void addIfNotInLayout(LinearLayout layout, View view) {
+		if (!hasView(layout, view)) {
+			layout.addView(view);
+		}
+	}
 }

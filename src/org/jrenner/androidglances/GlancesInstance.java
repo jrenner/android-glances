@@ -17,6 +17,7 @@ import static org.jrenner.androidglances.Constants.UPDATE_ERROR;
 public class GlancesInstance {
     private static final String TAG = "Glances-Instance";
     private static int updateInterval = 3000; // milliseconds
+	private String glancesServerVersion;
     private long lastUpdateTime;
     public URL url;
     public String nickName;
@@ -36,6 +37,8 @@ public class GlancesInstance {
     List<Process> processes;
     ProcessCount procCount;
     List<Sensor> sensors;
+	List<Battery> batteries;
+	List<MonitoredProcess> monitoredProcesses;
     Integer cores;
     public boolean updateWaiting; // if true, there is new updated data for the app to process
     public boolean updateExecuting; // used to run only one update task at a time
@@ -94,6 +97,12 @@ public class GlancesInstance {
         return errorCode;
     }
 
+	public String getErrorText(UPDATE_ERROR err) {
+		String errText = Constants.errorTexts.get(err);
+		if (errText == null) errText = "Unknown error";
+		return errText;
+	}
+
     public void setErrorCode(UPDATE_ERROR code) {
         errorCode = code;
     }
@@ -111,6 +120,9 @@ public class GlancesInstance {
                 /*Object[] allFields = new Object[]{now, cpu, memory, memorySwap, systemInfo, netInterfaces, fileSystems,
                                      load, diskIO, limits, hddTemps, processes, procCount, sensors, cores};*/
                 try {
+					if (glancesServerVersion == null) {
+						glancesServerVersion = current.initializeAndGetVersion();
+					}
                     now = current.getNow();
                     cpu = current.getCpu();
                     memory = current.getMem();
@@ -125,13 +137,21 @@ public class GlancesInstance {
                     processes = current.getProcessList();
                     procCount = current.getProcessCount();
                     sensors = current.getSensors();
+					batteries = current.getBattery();
+					monitoredProcesses = current.getAllMonitored();
                     cores = current.getCore();
                 } catch (ParseException e) {
                     Log.w(TAG, "GetNow() - " + e.toString());
+				} catch (IllegalArgumentException e) {
+					String illegalArg = e.toString();
+					Log.e(TAG, "illegal argument: " + illegalArg);
+					if (illegalArg.contains("port")) {
+						setErrorCode(UPDATE_ERROR.INVALID_PORT);
+					}
                 } catch (XMLRPCException e) {
                     String error = e.toString();
                     Log.e(TAG, error);
-                    if (error.contains("Authentication failed") || error.contains("challenge is null")) {
+                    if (error.contains("status code '401'") || error.contains("challenge is null")) {
                         setErrorCode(UPDATE_ERROR.AUTH_FAILED);
                     } else if (error.contains("Connection refused")) {
                         setErrorCode(UPDATE_ERROR.CONN_REFUSED);
@@ -142,6 +162,7 @@ public class GlancesInstance {
                     } else if (error.contains("method") && error.contains("not supported")) {
                         // do nothing - older versions of glances won't support newer features like getHDDTemp
                     } else {
+						Log.e(TAG, "unhandled error: " + error);
                         setErrorCode(UPDATE_ERROR.UNDEFINED);
                     }
                 }
@@ -175,6 +196,10 @@ public class GlancesInstance {
     public int getUpdateInterval() {
         return updateInterval;
     }
+
+	public String getGlancesServerVersion() {
+		return glancesServerVersion;
+	}
 
     /**
      * Stop waiting and just update ASAP

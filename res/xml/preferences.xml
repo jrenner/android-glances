@@ -8,4 +8,12 @@
             android:entries="@array/update_interval_keys"
             android:entryValues="@array/update_interval_values"
             android:defaultValue="3000" />
+    <ListPreference
+        android:key="process_sort"
+        android:title="@string/settings_process_sort"
+        android:summary="@string/settings_process_sort_summary"
+        android:dialogTitle="@string/settings_process_sort_dialog"
+        android:entries="@array/process_sort_keys"
+        android:entryValues="@array/process_sort_values"
+        android:defaultValue="cpu_and_mem" />
 </PreferenceScreen>

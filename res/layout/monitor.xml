@@ -25,11 +25,20 @@
             android:id="@+id/serverAddress" />
     <TextView
             style="@style/MonitorTableTextView"
+            android:id="@+id/versionText" />
+    <TextView
+            style="@style/MonitorTableTextView"
             android:id="@+id/systemText"/>
     <TextView
         style="@style/MonitorTableTextView"
         android:id="@+id/updateTimeText" />
-
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/batteryHeader"
+            android:layout_alignParentLeft="true"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/batteryText" />
     <TextView
             style="@style/MonitorTableHeader"
             android:id="@+id/CPUHeader"
@@ -89,6 +98,13 @@
     <TextView
             style="@style/MonitorTableTextView"
             android:id="@+id/processes" />
+
+    <TextView
+            style="@style/MonitorTableHeader"
+            android:id="@+id/monProcHeader"/>
+    <TextView
+            style="@style/MonitorTableTextView"
+            android:id="@+id/monProcText" />
 
     <TextView
             style="@style/MonitorTableHeader"

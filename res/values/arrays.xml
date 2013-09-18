@@ -16,4 +16,20 @@
         <item>15000</item>
         <item>30000</item>
     </string-array>
+
+    <string-array name="process_sort_keys">
+        <item>@string/proc_sort_cpu_and_mem</item>
+        <item>@string/proc_sort_cpu</item>
+        <item>@string/proc_sort_mem</item>
+        <item>@string/proc_sort_name</item>
+        <item>@string/proc_sort_io</item>
+    </string-array>
+
+    <string-array name="process_sort_values">
+        <item>cpu_and_mem</item>
+        <item>cpu</item>
+        <item>mem</item>
+        <item>name</item>
+        <item>IO</item>
+    </string-array>
 </resources>

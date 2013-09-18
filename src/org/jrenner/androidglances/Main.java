@@ -3,6 +3,7 @@ package org.jrenner.androidglances;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,7 +14,11 @@ import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.SpinnerAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
@@ -31,10 +36,16 @@ public class Main extends SherlockFragmentActivity {
     private static MonitorFragment monitorFrag;
     private SpinnerAdapter serverSpinnerAdapter;
 
+	public static Context getContext() {
+		return (Context) instance.getApplicationContext();
+	}
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+		addErrorTexts();
         instance = this;
         super.onCreate(savedInstanceState);
+		ProcessComparators.initializeCompNames();
         setContentView(R.layout.main);
         if (monitorFrag == null) {
             initializeFragments();
@@ -265,10 +276,10 @@ public class Main extends SherlockFragmentActivity {
                         }
                     })
                     .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            //Toast.makeText(getApplicationContext(), "Canceled add server", Toast.LENGTH_LONG).show();
-                        }
-                    });
+						public void onClick(DialogInterface dialog, int id) {
+							//Toast.makeText(getApplicationContext(), "Canceled add server", Toast.LENGTH_LONG).show();
+						}
+					});
             return builder.create();
         }
 
@@ -352,14 +363,14 @@ public class Main extends SherlockFragmentActivity {
             final String[] serverNames = monitorFrag.getServerNames();
             builder.setTitle(getString(R.string.remove_server))
             .setItems(serverNames, new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int selection) {
-                    boolean removed = monitorFrag.removeServerFromList(serverNames[selection]);
-                    if (removed) {
-                        Toast.makeText(getInstance(), getString(R.string.server_removed) + " " + serverNames[selection],
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+				public void onClick(DialogInterface dialog, int selection) {
+					boolean removed = monitorFrag.removeServerFromList(serverNames[selection]);
+					if (removed) {
+						Toast.makeText(getInstance(), getString(R.string.server_removed) + " " + serverNames[selection],
+								Toast.LENGTH_SHORT).show();
+					}
+				}
+			});
             return builder.create();
         }
 
@@ -390,4 +401,14 @@ public class Main extends SherlockFragmentActivity {
         }
         return true;
     }
+
+	public void addErrorTexts() {
+		Map<Constants.UPDATE_ERROR, String> errorTexts = Constants.errorTexts;
+		errorTexts.put(Constants.UPDATE_ERROR.CONN_REFUSED, getString(R.string.error_conn_refused));
+		errorTexts.put(Constants.UPDATE_ERROR.AUTH_FAILED, getString(R.string.error_auth_failed));
+		errorTexts.put(Constants.UPDATE_ERROR.BAD_HOSTNAME, getString(R.string.error_bad_hostname));
+		errorTexts.put(Constants.UPDATE_ERROR.INVALID_PORT, getString(R.string.error_invalid_port));
+		errorTexts.put(Constants.UPDATE_ERROR.UNDEFINED, getString(R.string.error_undefined));
+
+	}
 }

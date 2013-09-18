@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Android Glances</string>
-    <string name="app_version">0.4.2</string>
+    <string name="app_version">1.0.0</string>
     
     <string name="ip_hostname">IP or Hostname</string>
     <string name="port">Port</string>
@@ -21,6 +21,8 @@
     <string name="monitor_status">%1$s old, refresh every %2$s</string>
     <string name="hard_drive_temperature">Hard Drive Temperatures</string>
     <string name="sensors">Sensors</string>
+    <string name="battery">Battery</string>
+    <string name="monitored_processes">Monitored Processes</string>
     <string name="cpu">CPU</string>
     <string name="memory">Memory</string>
     <string name="swap">Swap</string>
@@ -45,6 +47,16 @@
     <string name="settings_update_interval_summary">How often to fetch data from Glances server</string>
     <string name="settings_update_interval_dialog">Set new update interval (in seconds)</string>
 
+    <string name="settings_process_sort">Process sort</string>
+    <string name="settings_process_sort_summary">How to sort process list</string>
+    <string name="settings_process_sort_dialog">Choose process sorting method</string>
+
+    <string name="proc_sort_cpu_and_mem">CPU and Memory</string>
+    <string name="proc_sort_cpu">CPU</string>
+    <string name="proc_sort_mem">Memory</string>
+    <string name="proc_sort_name">Name</string>
+    <string name="proc_sort_io">IO R/W</string>
+
     <string name="no_server_selected">No server selected</string>
     <string name="connect_to_server">Trying to connect to server</string>
     <string name="about_author">author: Jon Renner</string>
@@ -55,6 +67,7 @@
     <string name="error_auth_failed">authentication error - check password</string>
     <string name="error_conn_refused">connection refused</string>
     <string name="error_bad_hostname">bad hostname</string>
+    <string name="error_invalid_port">invalid port</string>
     <string name="error_undefined">undefined error</string>
 
     <string name="invalid_port">port %s is not valid</string>
@@ -62,5 +75,5 @@
     <string name="invalid_server_name">server name %s is not valid</string>
 
     <string name="textsetter_processes_disabled">process data disabled by server</string>
-    <string name="textsetter_top_processes">Top 10 Processes by CPU + Memory</string>
+    <string name="textsetter_top_processes">Top 10 Processes</string>
 </resources>

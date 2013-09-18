@@ -1,0 +1,4 @@
+- now hide empty data views
+- support for glances 1.7 new api methods
+- now shows version of glances run by server
+- new setting: select process sorting method

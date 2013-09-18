@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Android Glances</string>
-    
     <string name="ip_hostname">IP ou nom</string>
     <string name="port">Port</string>
     <string name="password">Mot de passe (vide si aucun)</string>
@@ -20,6 +18,8 @@
     <string name="monitor_status">depuis %1$s, actualisation toutes les %2$s</string>
     <string name="hard_drive_temperature">Températures Disques</string>
     <string name="sensors">Capteurs</string>
+    <string name="battery">Batterie</string>
+    <string name="monitored_processes">Processus Surveillés</string>
     <string name="cpu">Processeur</string>
     <string name="memory">Mémoire</string>
     <string name="swap">Swap</string>
@@ -42,7 +42,17 @@
 
     <string name="settings_update_interval">Intervalle d\'actualisation</string>
     <string name="settings_update_interval_summary">Fréquence de récupération des données depuis le serveur Glances</string>
-    <string name="settings_update_interval_dialog">Définir l\'intervalle d\'actualisation (en secondes)</string>    
+    <string name="settings_update_interval_dialog">Définir l\'intervalle d\'actualisation (en secondes)</string>
+
+    <string name="settings_process_sort">Processus de tri</string>
+    <string name="settings_process_sort_summary">Comment trier la liste des processus</string>
+    <string name="settings_process_sort_dialog">Choisir la méthode de tri des processus</string>
+
+    <string name="proc_sort_cpu_and_mem">CPU + Mémoire</string>
+    <string name="proc_sort_cpu">CPU</string>
+    <string name="proc_sort_mem">Mémoire</string>
+    <string name="proc_sort_name">Nom</string>
+    <string name="proc_sort_io">IO R/W</string>
     
     <string name="no_server_selected">Pas de serveur séléctionné</string>
     <string name="connect_to_server">Tentative de connexion au serveur</string>
@@ -54,6 +64,7 @@
     <string name="error_auth_failed">erreur d\'authentification - vérifier le mot de passe</string>
     <string name="error_conn_refused">connexion refusée</string>
     <string name="error_bad_hostname">nom d\'hôte invalide</string>
+    <string name="error_invalid_port">port invalide</string>
     <string name="error_undefined">erreur non définie</string>
 
     <string name="invalid_port">port %s non valide</string>
@@ -61,6 +72,6 @@
     <string name="invalid_server_name">nom de serveur %s non valide</string>    
 
     <string name="textsetter_processes_disabled">Informations Processus désactivées par le serveur</string>
-    <string name="textsetter_top_processes">Top 10 des Processus par CPU + Mémoire</string>
+    <string name="textsetter_top_processes">Top 10 des Processus</string>
     
 </resources>
