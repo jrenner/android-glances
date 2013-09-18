@@ -21,7 +21,6 @@
         <item>@string/proc_sort_cpu_and_mem</item>
         <item>@string/proc_sort_cpu</item>
         <item>@string/proc_sort_mem</item>
-        <item>@string/proc_sort_name</item>
         <item>@string/proc_sort_io</item>
     </string-array>
 
@@ -29,7 +28,6 @@
         <item>cpu_and_mem</item>
         <item>cpu</item>
         <item>mem</item>
-        <item>name</item>
         <item>IO</item>
     </string-array>
 </resources>

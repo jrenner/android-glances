@@ -45,9 +45,9 @@ public class UserSettings extends SherlockPreferenceActivity implements SharedPr
 			case "mem":
 				comp = ProcessComparators.processMemoryComparator;
 				break;
-			case "name":
+/*			case "name":
 				comp = ProcessComparators.processNameComparator;
-				break;
+				break;*/
 			case "IO":
 				comp = ProcessComparators.processIOComparator;
 				break;

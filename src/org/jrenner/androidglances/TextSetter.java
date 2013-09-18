@@ -226,7 +226,6 @@ public class TextSetter {
         }
         String procData = "";
         Collections.sort(processes, comp);
-		Collections.reverse(processes);
         int count = 0;
         int numToAdd = 10;
         for (Process proc : processes) {

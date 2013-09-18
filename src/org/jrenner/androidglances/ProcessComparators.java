@@ -55,11 +55,11 @@ public class ProcessComparators {
 		}
 	};
 
-	public static Comparator<Process> processNameComparator = new Comparator<Process>() {
+/*	public static Comparator<Process> processNameComparator = new Comparator<Process>() {
 		public int compare(Process p1, Process p2) {
 			return p1.getName().compareTo(p2.getName());
 		}
-	};
+	};*/
 
 	public static Comparator<Process> processIOComparator = new Comparator<Process>() {
 		public int compare(Process p1, Process p2) {
@@ -77,7 +77,7 @@ public class ProcessComparators {
 		compNames.put(processCPUPlusMemoryComparator, Main.getContext().getString(R.string.proc_sort_cpu_and_mem));
 		compNames.put(processCPUComparator, Main.getContext().getString(R.string.proc_sort_cpu));
 		compNames.put(processMemoryComparator, Main.getContext().getString(R.string.proc_sort_mem));
-		compNames.put(processNameComparator, Main.getContext().getString(R.string.proc_sort_name));
+		//compNames.put(processNameComparator, Main.getContext().getString(R.string.proc_sort_name));
 		compNames.put(processIOComparator, Main.getContext().getString(R.string.proc_sort_io));
 	}
 }
