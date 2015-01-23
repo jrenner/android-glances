@@ -1,3 +1,8 @@
+ANDROID GLANCES IS NOW DEFUNCT
+-----------------------------
+It no longer works with recent version of Glances.
+The code remains here in case someone has the time or inclination to update it at some point.
+
 <h1>Android Glances</h1>
 <b>Android Glances is a client app for [Glances](http://nicolargo.github.io/glances/) run in server mode.<Br>
 The primary use is to monitor a machine over a network.</b>
